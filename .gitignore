@@ -64,3 +64,5 @@ backend/.git
 # Project specific
 lib.zip
 *.aiexclude
+lib/firebase_options.dart
+firebase.json
