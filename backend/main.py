@@ -334,4 +334,8 @@ async def health():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Use 8000 as a local fallback.
+    port = int(os.environ.get("PORT", 8000))
+
+    print(f"Starting LingoShikshak on port {port}...")
+    uvicorn.run(main:app, host="0.0.0.0", port=port, reload=False)
