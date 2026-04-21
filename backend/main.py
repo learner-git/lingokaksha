@@ -125,6 +125,11 @@ class ClarificationRequest(BaseModel):
     current_explanation: str
     language: str = "german"
 
+class WordDetailsRequest(BaseModel):
+    word: str
+    language: str = "german"
+    level: str = "A1"
+
 # --- Core AI Dispatcher ---
 
 async def call_llm(prompt: str, system_instruction: str, json_mode: bool = True, max_tokens: int = 1500) -> Optional[str]:
@@ -320,6 +325,16 @@ async def check_grammar(req: GrammarRequest):
 
     raw = await call_llm(prompt, system)
     if not raw: return {"correct": True, "errors": [], "corrected": req.sentence, "explanation": ""}
+
+    return clean_and_parse_json(raw)
+
+@app.post("/api/word-details")
+async def get_word_details(req: WordDetailsRequest):
+    prompt = prompts.get_word_details_prompt(req.language, req.level, req.word)
+    system = f"You are a linguistic expert in {req.language}. Return ONLY JSON."
+
+    raw = await call_llm(prompt, system)
+    if not raw: raise HTTPException(502, "Word details service unavailable")
 
     return clean_and_parse_json(raw)
 

@@ -164,3 +164,41 @@ Schema:
   "explanation": "Brief explanation in English"
 }}
 """
+
+def get_word_details_prompt(language: str, level: str, word: str) -> str:
+    return f"""
+You are a linguistic expert and {language} teacher.
+Provide the meaning and usage examples for the word: "{word}"
+Target Level: CEFR {level}
+
+Requirements:
+1. Provide the English meaning of the word.
+2. Provide exactly three example sentences in {language} with their English translations.
+3. Each example MUST represent a different tense: Past, Present, and Future.
+4. Use vocabulary appropriate for the {level} level.
+
+Return ONLY a valid JSON object.
+
+Schema:
+{{
+  "word": "{word}",
+  "meaning": "English meaning",
+  "examples": [
+    {{
+      "tense": "past",
+      "sentence": "Sentence in {language}",
+      "translation": "English translation"
+    }},
+    {{
+      "tense": "present",
+      "sentence": "Sentence in {language}",
+      "translation": "English translation"
+    }},
+    {{
+      "tense": "future",
+      "sentence": "Sentence in {language}",
+      "translation": "English translation"
+    }}
+  ]
+}}
+"""
