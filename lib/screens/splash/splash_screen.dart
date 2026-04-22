@@ -72,7 +72,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 .fadeIn(duration: 500.ms, delay: 200.ms),
             const SizedBox(height: 8),
             const Text(
-              'Deutsch lernen mit KI',
+              'Learn with AI',
               style: TextStyle(
                 color: Colors.white70,
                 fontSize: 16,

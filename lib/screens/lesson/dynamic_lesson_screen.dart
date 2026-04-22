@@ -40,7 +40,7 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
       setState(() => _isClarifying = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to get clarification. Please try again.')),
+          const SnackBar(content: Text('Oops! This service is temporarily unavailable. Please try again later.')),
         );
       }
     }
@@ -60,21 +60,41 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
       body: lessonFuture.when(
         data: (lesson) => _buildContent(lesson),
         loading: () => _buildShimmer(),
-        error: (err, _) => Center(child: Text('Error: $err')),
+        error: (err, _) => const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('😕', style: TextStyle(fontSize: 48)),
+                SizedBox(height: 16),
+                Text(
+                  'Oops! This service is temporarily unavailable. Please try again later.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildContent(LessonContent lesson) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryTextColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final secondaryTextColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 1. Title & Explanation segments
-          Text(lesson.title, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+          Text(lesson.title, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: primaryTextColor)),
           const SizedBox(height: 16),
-          ...lesson.explanation.map((segment) => _buildExplanationSegment(segment)),
+          ...lesson.explanation.map((segment) => _buildExplanationSegment(segment, isDark, primaryTextColor, secondaryTextColor)),
           
           if (_clarification == null && !_isClarifying)
             Padding(
@@ -88,13 +108,13 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
             ),
           
           if (_isClarifying)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Row(
                 children: [
-                  SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-                  SizedBox(width: 12),
-                  Text('Getting deeper explanation...', style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic)),
+                  const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                  const SizedBox(width: 12),
+                  Text('Getting deeper explanation...', style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: secondaryTextColor)),
                 ],
               ),
             ),
@@ -104,7 +124,7 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.amber.withOpacity(0.05),
+                color: Colors.amber.withOpacity(isDark ? 0.1 : 0.05),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.amber.withOpacity(0.2)),
               ),
@@ -119,10 +139,10 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Text(_clarification!.deeperExplanation, style: const TextStyle(fontSize: 15, height: 1.5)),
+                  Text(_clarification!.deeperExplanation, style: TextStyle(fontSize: 15, height: 1.5, color: primaryTextColor)),
                   if (_clarification!.newExamples.isNotEmpty) ...[
                     const SizedBox(height: 16),
-                    const Text('Additional Examples:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    Text('Additional Examples:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: primaryTextColor)),
                     const SizedBox(height: 8),
                     ..._clarification!.newExamples.map((ex) => Padding(
                           padding: const EdgeInsets.only(bottom: 8),
@@ -130,7 +150,7 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('• ${ex.targetText}', style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.primary)),
-                              Text('  ${ex.english}', style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                              Text('  ${ex.english}', style: TextStyle(fontSize: 13, color: secondaryTextColor)),
                             ],
                           ),
                         )),
@@ -141,14 +161,14 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
           ],
 
           const SizedBox(height: 32),
-          Text('Examples', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          Text('Examples', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: primaryTextColor)),
           const SizedBox(height: 12),
-          ...lesson.examples.map((ex) => _buildExampleCard(ex)),
+          ...lesson.examples.map((ex) => _buildExampleCard(ex, isDark, primaryTextColor, secondaryTextColor)),
 
           const SizedBox(height: 32),
-          Text('Practice', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          Text('Practice', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: primaryTextColor)),
           const SizedBox(height: 12),
-          ...lesson.practiceQuestions.asMap().entries.map((entry) => _buildPracticeQuestion(entry.key, entry.value)),
+          ...lesson.practiceQuestions.asMap().entries.map((entry) => _buildPracticeQuestion(entry.key, entry.value, isDark, primaryTextColor, secondaryTextColor)),
           
           const SizedBox(height: 40),
           SizedBox(
@@ -169,12 +189,12 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
     );
   }
 
-  Widget _buildExplanationSegment(LessonSegment segment) {
+  Widget _buildExplanationSegment(LessonSegment segment, bool isDark, Color primaryTextColor, Color secondaryTextColor) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.04),
+        color: AppColors.primary.withOpacity(isDark ? 0.1 : 0.04),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.primary.withOpacity(0.1)),
       ),
@@ -183,33 +203,33 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
         children: [
           Text(
             segment.targetText,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppColors.textPrimary, height: 1.4),
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primaryTextColor, height: 1.4),
           ),
           const SizedBox(height: 8),
           Text(
             segment.english,
-            style: const TextStyle(fontSize: 15, color: AppColors.textSecondary, height: 1.4),
+            style: TextStyle(fontSize: 15, color: secondaryTextColor, height: 1.4),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildExampleCard(LessonExample ex) {
+  Widget _buildExampleCard(LessonExample ex, bool isDark, Color primaryTextColor, Color secondaryTextColor) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceVariantDark : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))],
+        border: Border.all(color: isDark ? AppColors.dividerDark : Colors.grey.withOpacity(0.2)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.2 : 0.02), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(ex.targetText, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
-          Text(ex.english, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+          Text(ex.english, style: TextStyle(fontSize: 14, color: secondaryTextColor)),
           if (ex.note != null) ...[
             const Divider(height: 20),
             Text(ex.note!, style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: AppColors.accent)),
@@ -219,7 +239,7 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
     );
   }
 
-  Widget _buildPracticeQuestion(int index, LessonPracticeQuestion q) {
+  Widget _buildPracticeQuestion(int index, LessonPracticeQuestion q, bool isDark, Color primaryTextColor, Color secondaryTextColor) {
     final selectedIndex = _answers[index];
     final isAnswered = selectedIndex != null;
 
@@ -228,28 +248,28 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Text('${index + 1}. ${q.question}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          child: Text('${index + 1}. ${q.question}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: primaryTextColor)),
         ),
         ...q.options.asMap().entries.map((opt) {
           final optionIndex = opt.key;
           final isSelected = selectedIndex == optionIndex;
           final isCorrect = optionIndex == q.correctIndex;
           
-          Color bgColor = Colors.grey.withOpacity(0.05);
-          Color borderColor = Colors.transparent;
+          Color bgColor = isDark ? AppColors.surfaceVariantDark : Colors.grey.withOpacity(0.05);
+          Color borderColor = isDark ? AppColors.dividerDark : Colors.transparent;
           IconData? icon;
           Color? iconColor;
 
           if (isAnswered) {
             if (isCorrect) {
-              bgColor = Colors.green.withOpacity(0.1);
+              bgColor = Colors.green.withOpacity(0.15);
               borderColor = Colors.green;
               if (isSelected) {
                 icon = Icons.check_circle;
                 iconColor = Colors.green;
               }
             } else if (isSelected) {
-              bgColor = Colors.red.withOpacity(0.1);
+              bgColor = Colors.red.withOpacity(0.15);
               borderColor = Colors.red;
               icon = Icons.cancel;
               iconColor = Colors.red;
@@ -273,7 +293,7 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
                       opt.value,
                       style: TextStyle(
                         fontWeight: isSelected || (isAnswered && isCorrect) ? FontWeight.bold : FontWeight.normal,
-                        color: isAnswered && isCorrect ? Colors.green.shade700 : (isSelected ? Colors.red.shade700 : AppColors.textPrimary),
+                        color: isAnswered && isCorrect ? Colors.green.shade400 : (isSelected ? Colors.red.shade400 : primaryTextColor),
                       ),
                     ),
                   ),
@@ -288,19 +308,19 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
             margin: const EdgeInsets.only(top: 8, bottom: 16),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.05),
+              color: AppColors.info.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.blue.withOpacity(0.1)),
+              border: Border.all(color: AppColors.info.withOpacity(0.2)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline, size: 16, color: Colors.blue),
+                const Icon(Icons.info_outline, size: 16, color: AppColors.info),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     q.explanation,
-                    style: const TextStyle(fontSize: 13, color: Colors.blue, height: 1.4),
+                    style: const TextStyle(fontSize: 13, color: AppColors.info, height: 1.4),
                   ),
                 ),
               ],

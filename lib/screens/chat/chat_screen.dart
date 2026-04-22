@@ -57,7 +57,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to check grammar. Please try again.')),
+        const SnackBar(content: Text('Oops! This service is temporarily unavailable. Please try again later.')),
       );
     } finally {
       if (mounted) setState(() => _isCheckingGrammar = false);
@@ -425,7 +425,7 @@ class _ChatBubble extends StatelessWidget {
               if (message.status == MessageStatus.error)
                 const Padding(
                   padding: EdgeInsets.only(top: 4),
-                  child: Text('❌ Error sending', style: TextStyle(color: Colors.red, fontSize: 10)),
+                  child: Text('❌ This service is temporarily unavailable.', style: TextStyle(color: Colors.red, fontSize: 10)),
                 ),
             ],
           ],

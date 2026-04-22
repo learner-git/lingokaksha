@@ -1,4 +1,5 @@
 import 'article_game_screen.dart';
+import 'word_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -197,23 +198,34 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
 
   Widget _buildWordListTab() {
     final allCards = ref.watch(allVocabCardsProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryTextColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final secondaryTextColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
 
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: allCards.length,
-      separatorBuilder: (_, __) => const Divider(height: 1),
+      separatorBuilder: (_, __) => Divider(height: 1, color: isDark ? AppColors.dividerDark : AppColors.divider),
       itemBuilder: (context, i) {
         final card = allCards[i];
         return ListTile(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => WordDetailScreen(word: card.targetText, level: card.level),
+              ),
+            );
+          },
           contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          title: Text(card.targetText, style: const TextStyle(fontWeight: FontWeight.w600)),
-          subtitle: Text(card.english),
+          title: Text(card.targetText, style: TextStyle(fontWeight: FontWeight.w600, color: primaryTextColor)),
+          subtitle: Text(card.english, style: TextStyle(color: secondaryTextColor)),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
                 icon: Icon(card.isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: card.isFavorite ? Colors.red : null, size: 20),
+                    color: card.isFavorite ? Colors.red : (isDark ? AppColors.textHintDark : null), size: 20),
                 onPressed: () => ref.read(vocabReviewNotifierProvider.notifier).toggleFavorite(card.id),
               ),
               _LevelBadge(level: card.level),
@@ -226,10 +238,13 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
 
   Widget _buildCategoriesTab() {
     final categories = ref.read(vocabRepositoryProvider).getUniqueCategories();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryTextColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final secondaryTextColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
 
     if (categories.isEmpty) {
-      return const Center(
-        child: Text('No categories found', style: TextStyle(color: AppColors.textSecondary)),
+      return Center(
+        child: Text('No categories found', style: TextStyle(color: secondaryTextColor)),
       );
     }
 
@@ -248,7 +263,7 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
 
         return Card(
           elevation: 0,
-          color: AppColors.primary.withOpacity(0.05),
+          color: isDark ? AppColors.surfaceVariantDark : AppColors.primary.withOpacity(0.05),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
             side: BorderSide(color: AppColors.primary.withOpacity(0.1)),
@@ -269,9 +284,9 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(category, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                  Text(category, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: primaryTextColor)),
                   const SizedBox(height: 4),
-                  Text('${cards.length} words', style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+                  Text('${cards.length} words', style: TextStyle(fontSize: 14, color: secondaryTextColor)),
                 ],
               ),
             ),
@@ -282,26 +297,26 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
   }
 }
 
-class CategoryReviewScreen extends StatefulWidget {
+class CategoryReviewScreen extends ConsumerStatefulWidget {
   final String category;
   final List<VocabCard> cards;
 
   const CategoryReviewScreen({super.key, required this.category, required this.cards});
 
   @override
-  State<CategoryReviewScreen> createState() => _CategoryReviewScreenState();
+  ConsumerState<CategoryReviewScreen> createState() => _CategoryReviewScreenState();
 }
 
-class _CategoryReviewScreenState extends State<CategoryReviewScreen> {
+class _CategoryReviewScreenState extends ConsumerState<CategoryReviewScreen> {
   int _currentIndex = 0;
   bool _revealed = false;
 
   @override
   Widget build(BuildContext context) {
     final card = widget.cards[_currentIndex];
-    // We don't have easy access to ref here, but we can pass it or just use a generic label
-    // or better, since it's a ConsumerStatefulWidget, use ref.
-    // Wait, CategoryReviewScreen is a StatefulWidget, let me change it to ConsumerStatefulWidget
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryTextColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.category)),
       body: Padding(
@@ -316,7 +331,7 @@ class _CategoryReviewScreenState extends State<CategoryReviewScreen> {
             ),
             const SizedBox(height: 12),
             Text('Word ${_currentIndex + 1} of ${widget.cards.length}',
-                style: const TextStyle(color: AppColors.textSecondary)),
+                style: TextStyle(color: secondaryTextColor)),
             const Spacer(),
             GestureDetector(
               onTap: () => setState(() => _revealed = !_revealed),
@@ -394,15 +409,24 @@ class _FlashCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryTextColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final secondaryTextColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
+    final cardColor = isDark ? AppColors.surfaceVariantDark : Theme.of(context).cardColor;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: color.withOpacity(0.3), width: 2),
         boxShadow: [
-          BoxShadow(color: color.withOpacity(0.1), blurRadius: 15, offset: const Offset(0, 8)),
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Column(
@@ -410,10 +434,26 @@ class _FlashCard extends StatelessWidget {
         children: [
           Text(topLabel, style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.w600)),
           const SizedBox(height: 24),
-          Text(mainText, style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800), textAlign: TextAlign.center),
+          Text(
+            mainText,
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w800,
+              color: primaryTextColor,
+            ),
+            textAlign: TextAlign.center,
+          ),
           if (subText.isNotEmpty) ...[
             const SizedBox(height: 20),
-            Text(subText, style: const TextStyle(fontSize: 15, color: AppColors.textSecondary, fontStyle: FontStyle.italic), textAlign: TextAlign.center),
+            Text(
+              subText,
+              style: TextStyle(
+                fontSize: 15,
+                color: secondaryTextColor,
+                fontStyle: FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ],
       ),

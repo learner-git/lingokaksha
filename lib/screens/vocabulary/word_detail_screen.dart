@@ -61,7 +61,11 @@ class _WordDetailScreenState extends ConsumerState<WordDetailScreen> {
                   children: [
                     const Text('😕', style: TextStyle(fontSize: 48)),
                     const SizedBox(height: 16),
-                    Text('Error: ${snapshot.error}', textAlign: TextAlign.center),
+                    const Text(
+                      'Oops! This service is temporarily unavailable. Please try again later.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: () => setState(() => _detailsFuture = _loadDetails()),

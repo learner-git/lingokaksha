@@ -85,7 +85,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           borderRadius: BorderRadius.circular(18),
                         ),
                         child: const Center(
-                          child: Text('🇩🇪',
+                          child: Text('🌍',
                               style: TextStyle(fontSize: 34)),
                         ),
                       )
@@ -108,8 +108,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                       Text(
                         _isSignUp
-                            ? 'Start your German journey today'
-                            : 'Continue learning German',
+                            ? 'Start your language journey today'
+                            : 'Continue your learning journey',
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -306,7 +306,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                       Center(
                         child: Text(
-                          'Deutsch lernen • A1 → B2',
+                          'Master multiple languages',
                           style:
                               theme.textTheme.bodySmall,
                         ),

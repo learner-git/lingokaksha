@@ -130,6 +130,11 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
     final nounPart = nounParts.length > 1 ? nounParts.sublist(1).join(' ') : _currentWord!.targetText;
     final correctArticle = nounParts[0];
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryTextColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final secondaryTextColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
+    final cardColor = isDark ? AppColors.surfaceVariantDark : Theme.of(context).cardColor;
+
     return Center(
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -139,20 +144,20 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'What is the correct article?',
-                style: TextStyle(fontSize: 18, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 18, color: secondaryTextColor),
               ),
               const SizedBox(height: 24),
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
+                  color: cardColor,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: AppColors.primary.withOpacity(0.1)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -174,9 +179,10 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
                         ),
                         TextSpan(
                           text: nounPart,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
+                            color: primaryTextColor,
                           ),
                         ),
                       ],
@@ -191,7 +197,7 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
                 alignment: WrapAlignment.center,
                 children: articles.map((art) => SizedBox(
                   width: (MediaQuery.of(context).size.width - 48 - (articles.length > 3 ? 24 : 12) * (articles.length - 1)) / (articles.length > 3 ? 2 : articles.length),
-                  child: _buildArticleOption(art),
+                  child: _buildArticleOption(art, isDark),
                 )).toList(),
               ),
               const SizedBox(height: 32),
@@ -219,16 +225,16 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
                       Text(
                         'English: ${_currentWord!.english}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, color: primaryTextColor),
                       ),
                       if (_currentWord!.exampleSentence != null) ...[
                         const SizedBox(height: 8),
                         Text(
                           'Example: ${_currentWord!.exampleSentence}',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontStyle: FontStyle.italic,
-                            color: AppColors.textSecondary,
+                            color: secondaryTextColor,
                           ),
                         ),
                       ],
@@ -252,32 +258,32 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
     );
   }
 
-  Widget _buildArticleOption(String article) {
+  Widget _buildArticleOption(String article, bool isDark) {
     final bool isSelected = _selectedArticle == article;
     final bool isCorrectOption = _answered &&
         _currentWord!.targetText.split(' ')[0].toLowerCase() == article.toLowerCase();
 
     Color borderColor = AppColors.primary.withOpacity(0.2);
     Color? backgroundColor;
-    Color textColor = AppColors.textPrimary;
+    Color textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
 
     if (_answered) {
       if (isCorrectOption) {
         borderColor = AppColors.success;
-        backgroundColor = AppColors.success.withOpacity(0.1);
+        backgroundColor = AppColors.success.withOpacity(0.15);
         textColor = AppColors.success;
       } else if (isSelected) {
         borderColor = AppColors.error;
-        backgroundColor = AppColors.error.withOpacity(0.1);
+        backgroundColor = AppColors.error.withOpacity(0.15);
         textColor = AppColors.error;
       } else {
         borderColor = Colors.grey.withOpacity(0.2);
-        textColor = Colors.grey;
+        textColor = isDark ? AppColors.textHintDark : Colors.grey;
       }
     } else {
       if (isSelected) {
         borderColor = AppColors.primary;
-        backgroundColor = AppColors.primary.withOpacity(0.1);
+        backgroundColor = AppColors.primary.withOpacity(0.15);
         textColor = AppColors.primary;
       }
     }

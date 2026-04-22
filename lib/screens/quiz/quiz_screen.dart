@@ -71,6 +71,12 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           final q = session.questions[session.currentIndex];
           final userAnswer = session.userAnswers[session.currentIndex];
           final answered = userAnswer != null;
+          final isDark = theme.brightness == Brightness.dark;
+          
+          final cardColor = isDark ? AppColors.surfaceVariantDark : theme.cardColor;
+          final borderColor = isDark ? AppColors.dividerDark : AppColors.divider;
+          final primaryTextColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
+          final secondaryTextColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
 
           return SafeArea(
             child: Padding(
@@ -86,7 +92,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                           child: LinearProgressIndicator(
                             value: (session.currentIndex + 1) /
                                 session.questions.length,
-                            backgroundColor: AppColors.divider,
+                            backgroundColor: borderColor,
                             valueColor: const AlwaysStoppedAnimation<Color>(
                                 AppColors.warning),
                             minHeight: 7,
@@ -96,7 +102,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                       const SizedBox(width: 12),
                       Text(
                         '${session.currentIndex + 1}/${session.questions.length}',
-                        style: theme.textTheme.bodySmall,
+                        style: theme.textTheme.bodySmall?.copyWith(color: secondaryTextColor),
                       ),
                     ],
                   ),
@@ -107,13 +113,16 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
+                      color: cardColor,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.divider),
+                      border: Border.all(color: borderColor),
                     ),
                     child: Text(
                       q.question,
-                      style: theme.textTheme.headlineSmall,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        color: primaryTextColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   )
@@ -131,15 +140,15 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                         final opt = entry.value;
                         Color? bg;
                         Color? border;
-                        Color textColor = AppColors.textPrimary;
+                        Color textColor = primaryTextColor;
 
                         if (answered) {
                           if (i == q.correctIndex) {
-                            bg = AppColors.correctBg;
+                            bg = AppColors.correct.withOpacity(0.15);
                             border = AppColors.correct;
                             textColor = AppColors.correct;
                           } else if (i == userAnswer) {
-                            bg = AppColors.incorrectBg;
+                            bg = AppColors.incorrect.withOpacity(0.15);
                             border = AppColors.incorrect;
                             textColor = AppColors.incorrect;
                           }
@@ -156,43 +165,51 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                         session.currentIndex, i),
                             child: AnimatedContainer(
                               duration: 200.ms,
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                               decoration: BoxDecoration(
-                                color: bg ?? Theme.of(context).cardColor,
+                                color: bg ?? cardColor,
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: border ?? AppColors.divider,
+                                  color: border ?? borderColor,
                                   width: border != null ? 2 : 1,
                                 ),
+                                boxShadow: [
+                                  if (!answered)
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.03),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                ],
                               ),
                               child: Row(
                                 children: [
                                   Container(
-                                    width: 28,
-                                    height: 28,
+                                    width: 32,
+                                    height: 32,
                                     decoration: BoxDecoration(
-                                      color: (border ?? AppColors.divider)
-                                          .withOpacity(0.15),
-                                      borderRadius: BorderRadius.circular(8),
+                                      color: (border ?? borderColor)
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Center(
                                       child: Text(
                                         ['A', 'B', 'C', 'D'][i],
                                         style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 13,
-                                          color: border ?? AppColors.textSecondary,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 14,
+                                          color: border ?? secondaryTextColor,
                                         ),
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  const SizedBox(width: 14),
                                   Expanded(
                                     child: Text(
                                       opt,
                                       style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
                                         color: textColor,
                                       ),
                                     ),
@@ -311,8 +328,8 @@ class _QuizError extends StatelessWidget {
                 style: TextStyle(
                     fontWeight: FontWeight.w700, fontSize: 18)),
             const SizedBox(height: 8),
-            Text(error,
-                style: const TextStyle(color: AppColors.textSecondary),
+            const Text('Oops! This service is temporarily unavailable. Please try again later.',
+                style: TextStyle(color: AppColors.textSecondary),
                 textAlign: TextAlign.center),
             const SizedBox(height: 24),
             ElevatedButton.icon(

@@ -38,7 +38,7 @@ logger = logging.getLogger("LingoKaksha.Backend")
 # --- Constants ---
 DEFAULT_TIMEOUT = 45
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
 OPENAI_MODEL = "gpt-4o-mini"
 
 # --- Client Initialization ---
