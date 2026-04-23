@@ -129,6 +129,37 @@ class GptService {
     }
   }
 
+  /// Analyzes voice input via backend proxy (Whisper + LLM).
+  Future<Map<String, dynamic>> analyzeVoice({
+    required String audioPath,
+    required String language,
+    required String level,
+    String mode = 'normal',
+    String? expectedText,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(audioPath, filename: 'audio.m4a'),
+      });
+
+      final response = await _dio.post(
+        '${AppConstants.apiBaseUrl}/api/voice-analysis',
+        data: formData,
+        queryParameters: {
+          'language': language,
+          'level': level,
+          'mode': mode,
+          if (expectedText != null) 'expected_text': expectedText,
+        },
+      );
+      
+      return response.data;
+    } catch (e) {
+      print('Voice Analysis Error: $e');
+      throw Exception('Failed to analyze voice: $e');
+    }
+  }
+
   // ─── PRIVATE NETWORK HELPERS ──────────────────────────────────────────────
 
   Future<String> _callBackendProxy(String path, Map<String, dynamic> body) async {

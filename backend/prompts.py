@@ -202,3 +202,34 @@ Schema:
   ]
 }}
 """
+
+def get_voice_analysis_prompt(language: str, level: str, user_text: str, mode: str, expected_text: str = None) -> str:
+    return f"""
+You are a professional {language} speech tutor.
+Analyze the user's spoken input (transcribed) for CEFR level {level}.
+
+Mode: {mode}
+User Spoke: "{user_text}"
+{f'Expected Phrase (Repeat Mode): "{expected_text}"' if expected_text else ''}
+
+Tasks:
+1. Correct Grammar errors in the transcription.
+2. Calculate a Pronunciation Grade (0-100) based on how well the transcription matches the {f'Expected Phrase "{expected_text}"' if expected_text else 'contextual natural speech'}.
+3. Provide 2-3 "Vocabulary Level-ups" (more advanced/natural words).
+4. For 'roleplay' mode, generate a short, helpful tutor response to keep the conversation going.
+5. Provide specific feedback on clarity or common pitfalls for {language} learners.
+
+Return ONLY a valid JSON object.
+
+Schema:
+{{
+  "user_text": "{user_text}",
+  "corrected": "...",
+  "explanation": "...",
+  "pronunciation_score": 85,
+  "vocab_upgrades": ["...", "..."],
+  "tutor_response": "...",
+  "feedback": "..."
+}}
+"""
+

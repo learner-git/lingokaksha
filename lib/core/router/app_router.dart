@@ -18,6 +18,7 @@ import '../../screens/splash/splash_screen.dart';
 import '../../screens/vocabulary/vocabulary_screen.dart';
 import '../../widgets/common/main_shell.dart';
 import '../../screens/profile/profile_screen.dart';
+import '../../screens/voice/voice_tutor_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -97,6 +98,11 @@ GoRouter appRouter(AppRouterRef ref) {
             path: '/chat',
             name: 'chat',
             builder: (_, __) => const ChatScreen(),
+          ),
+          GoRoute(
+            path: '/voice-tutor',
+            name: 'voice-tutor',
+            builder: (_, __) => const VoiceTutorScreen(),
           ),
           GoRoute(
             path: '/quiz-hub',

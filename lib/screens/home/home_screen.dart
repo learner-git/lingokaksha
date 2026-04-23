@@ -555,6 +555,13 @@ class _QuickActionsGrid extends ConsumerWidget {
         'route': '/chat',
       },
       {
+        'icon': Icons.mic_rounded,
+        'label': 'Voice Tutor',
+        'sub': 'AI Voice Practice',
+        'color': Colors.deepPurple,
+        'route': '/voice-tutor',
+      },
+      {
         'icon': Icons.style_rounded,
         'label': 'Vocabulary',
         'sub': 'Flashcard review',
