@@ -12,10 +12,11 @@ from typing import Optional, List, Dict, Any, AsyncGenerator
 
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, HTTPException, Security, Depends
+from fastapi import FastAPI, HTTPException, Security, Depends, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+import tempfile
 
 # SDK Imports
 from google import genai
@@ -129,6 +130,11 @@ class WordDetailsRequest(BaseModel):
     word: str
     language: str = "german"
     level: str = "A1"
+
+class VoiceStartRequest(BaseModel):
+    mode: str
+    language: str
+    level: str
 
 # --- Core AI Dispatcher ---
 
@@ -337,6 +343,73 @@ async def get_word_details(req: WordDetailsRequest):
     if not raw: raise HTTPException(502, "Word details service unavailable")
 
     return clean_and_parse_json(raw)
+
+@app.post("/api/voice-start")
+async def voice_start(req: VoiceStartRequest):
+    """Generates an opening line for a voice session."""
+    prompt = f"Generate a short, engaging opening line in {req.language} for a {req.level} learner. Mode: {req.mode}. Followed by its English translation in brackets."
+    system = f"You are a friendly {req.language} tutor. Keep it under 20 words. Return ONLY the text."
+
+    opening = await call_llm(prompt, system, json_mode=False)
+    return {"text": opening or "Hello! Let's start our conversation."}
+
+@app.post("/api/voice-analysis")
+async def voice_analysis(
+    language: str,
+    level: str,
+    mode: str = "normal",
+    expected_text: Optional[str] = None,
+    history: Optional[str] = None, # Received as JSON string from query or form
+    file: UploadFile = File(...)
+):
+    """
+    STT + LLM Analysis Endpoint with History support.
+    """
+    if not GROQ:
+        raise HTTPException(status_code=503, detail="Voice service (Groq) not configured")
+
+    try:
+        # Save uploaded file to temp
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".m4a") as tmp:
+            content = await file.read()
+            tmp.write(content)
+            tmp_path = tmp.name
+
+        # 1. Transcribe with Whisper
+        with open(tmp_path, "rb") as audio:
+            transcription = await GROQ.audio.transcriptions.create(
+                file=audio,
+                model="whisper-large-v3",
+                language=None, # Auto-detect
+                response_format="text"
+            )
+
+        # Cleanup temp file
+        os.unlink(tmp_path)
+
+        user_text = transcription if isinstance(transcription, str) else transcription.text
+
+        # Parse history if provided
+        history_list = []
+        if history:
+            try:
+                history_list = json.loads(history)
+            except:
+                logger.warning("Failed to parse history JSON")
+
+        # 2. Analyze with LLM
+        prompt = prompts.get_voice_analysis_prompt(language, level, user_text, mode, history=history_list, expected_text=expected_text)
+        system = f"You are a {language} voice tutor. Return JSON only."
+
+        raw_analysis = await call_llm(prompt, system)
+        if not raw_analysis:
+             return {"user_text": user_text, "tutor_response": "I heard you, but I couldn't analyze it right now."}
+
+        return clean_and_parse_json(raw_analysis)
+
+    except Exception as e:
+        logger.error(f"Voice Analysis Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")
 async def health():
