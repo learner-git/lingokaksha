@@ -222,6 +222,8 @@ Tasks:
 2. Calculate a Pronunciation Grade (0-100).
 3. Provide 2-3 "Vocabulary Level-ups".
 4. For 'roleplay' mode, generate a natural response that continues the conversation history.
+   - If the user asks to repeat (e.g., "Repeat that", "Noch einmal", "Say it again"), repeat your PREVIOUS response exactly.
+   - STRICT FORMAT for 'tutor_response': [Answer in {language}] ([English Translation])
 5. Provide feedback on clarity.
 
 Return ONLY a valid JSON object.
@@ -233,7 +235,7 @@ Schema:
   "explanation": "...",
   "pronunciation_score": 85,
   "vocab_upgrades": ["...", "..."],
-  "tutor_response": "...",
+  "tutor_response": "[{language} response] ([English translation])",
   "feedback": "..."
 }}
 """
