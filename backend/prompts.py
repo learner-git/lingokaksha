@@ -1,3 +1,5 @@
+from typing import List, Dict, Optional
+
 def get_tutor_system_prompt(language: str, level: str, topic: str) -> str:
     return f"""
 You are a friendly {language} tutor for CEFR level {level}.

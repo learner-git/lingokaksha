@@ -26,4 +26,4 @@ EXPOSE 8080
 
 # Command to run the application
 # Use the shell form to allow environment variable expansion for PORT
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
