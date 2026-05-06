@@ -346,10 +346,10 @@ async def get_word_details(req: WordDetailsRequest):
 
 @app.post("/api/voice-start")
 async def voice_start(req: VoiceStartRequest):
-    prompt = f"Generate a short, engaging opening line in {req.language} for a {req.level} learner. Mode: {req.mode}. Followed by its English translation in brackets."
-    system = f"You are a friendly {req.language} tutor. Keep it under 20 words. Return ONLY the text."
+    prompt = f"Say 'Hello, how are you?' in {req.language} followed by its English translation in brackets. Keep it simple for a {req.level} learner. Mode: {req.mode}."
+    system = f"You are a friendly {req.language} tutor. Return ONLY the text in the format: [Target Language] ([English Translation])"
     opening = await call_llm(prompt, system, json_mode=False)
-    return {"text": opening or "Hello! Let's start our conversation."}
+    return {"text": opening or "Hello! How are you?"}
 
 @app.post("/api/voice-analysis")
 async def voice_analysis(

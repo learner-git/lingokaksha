@@ -20,7 +20,7 @@ class AppConstants {
   ];
 
   // Firebase
-  static const firestoreDatabaseId = 'lingo-kaksha';
+  static const firestoreDatabaseId = '(default)';
 
   // Session
   static const maxChatHistory = 10;

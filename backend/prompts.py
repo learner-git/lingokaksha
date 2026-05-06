@@ -221,25 +221,25 @@ User Spoke: "{user_text}"
 
 Tasks:
 1. Translate the 'User Spoke' text to English.
-2. Correct Grammar errors in the transcription.
+2. PROACTIVE CORRECTION: Identify every grammar, tense, or word choice error. If the user's input is technically correct but unnatural, provide a "Better/Native way to say it".
 3. Calculate a Pronunciation Grade (0-100).
-4. Provide 2-3 "Vocabulary Level-ups".
+4. Provide 2-3 "Vocabulary Level-ups" (higher-level synonyms for words the user used).
 5. For 'roleplay' mode, generate a natural response that continues the conversation history.
    - If the user asks to repeat (e.g., "Repeat that", "Noch einmal", "Say it again"), repeat your PREVIOUS response exactly.
    - STRICT FORMAT for 'tutor_response': [Answer in {language}] ([English Translation])
-6. Provide feedback on clarity.
+6. Provide "Clarity Feedback" on how easily a native speaker would understand them.
 
 Return ONLY a valid JSON object.
 
 Schema:
 {{
   "user_text": "[{language} text] ([English Translation])",
-  "corrected": "...",
-  "explanation": "...",
+  "corrected": "The corrected {language} sentence",
+  "explanation": "Brief explanation of WHY the correction was made (in English)",
   "pronunciation_score": 85,
   "vocab_upgrades": ["...", "..."],
   "tutor_response": "[{language} response] ([English translation])",
-  "feedback": "..."
+  "feedback": "Clarity feedback in English"
 }}
 """
 

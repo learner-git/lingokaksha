@@ -136,6 +136,7 @@ class GptService {
     required String level,
     String mode = 'normal',
     String? expectedText,
+    List<Map<String, String>>? history,
   }) async {
     try {
       final formData = FormData.fromMap({
@@ -150,6 +151,7 @@ class GptService {
           'level': level,
           'mode': mode,
           if (expectedText != null) 'expected_text': expectedText,
+          if (history != null) 'history': jsonEncode(history),
         },
       );
       
@@ -157,6 +159,28 @@ class GptService {
     } catch (e) {
       print('Voice Analysis Error: $e');
       throw Exception('Failed to analyze voice: $e');
+    }
+  }
+
+  /// Starts a voice session with an opening line.
+  Future<String> startVoiceSession({
+    required String mode,
+    required String language,
+    required String level,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '${AppConstants.apiBaseUrl}/api/voice-start',
+        data: {
+          'mode': mode,
+          'language': language,
+          'level': level,
+        },
+      );
+      return response.data['text'] ?? 'Hello!';
+    } catch (e) {
+      print('Voice Start Error: $e');
+      return 'Hello! Let\'s begin.';
     }
   }
 
