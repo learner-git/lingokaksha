@@ -233,7 +233,7 @@ Return ONLY a valid JSON object.
 
 Schema:
 {{
-  "user_text": "[{language} text] ([English Translation])",
+  "user_text": "[User spoken language in {language} text] ([English Translation])",
   "corrected": "The corrected {language} sentence",
   "explanation": "Brief explanation of WHY the correction was made (in English)",
   "pronunciation_score": 85,
