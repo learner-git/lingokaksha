@@ -220,19 +220,20 @@ User Spoke: "{user_text}"
 {f'Expected Phrase (Repeat Mode): "{expected_text}"' if expected_text else ''}
 
 Tasks:
-1. Correct Grammar errors in the transcription.
-2. Calculate a Pronunciation Grade (0-100).
-3. Provide 2-3 "Vocabulary Level-ups".
-4. For 'roleplay' mode, generate a natural response that continues the conversation history.
+1. Translate the 'User Spoke' text to English.
+2. Correct Grammar errors in the transcription.
+3. Calculate a Pronunciation Grade (0-100).
+4. Provide 2-3 "Vocabulary Level-ups".
+5. For 'roleplay' mode, generate a natural response that continues the conversation history.
    - If the user asks to repeat (e.g., "Repeat that", "Noch einmal", "Say it again"), repeat your PREVIOUS response exactly.
    - STRICT FORMAT for 'tutor_response': [Answer in {language}] ([English Translation])
-5. Provide feedback on clarity.
+6. Provide feedback on clarity.
 
 Return ONLY a valid JSON object.
 
 Schema:
 {{
-  "user_text": "{user_text}",
+  "user_text": "[{language} text] ([English Translation])",
   "corrected": "...",
   "explanation": "...",
   "pronunciation_score": 85,
