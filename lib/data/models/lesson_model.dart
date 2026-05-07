@@ -3,15 +3,33 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class LessonContent {
   final String title;
   final List<LessonSegment> explanation;
+  final List<LessonDialogueLine> dialogue;
+  final LessonCommonPitfall? commonPitfall;
+  final String? proTip;
   final List<LessonExample> examples;
   final List<LessonPracticeQuestion> practiceQuestions;
 
   LessonContent({
     required this.title,
     required this.explanation,
+    required this.dialogue,
+    this.commonPitfall,
+    this.proTip,
     required this.examples,
     required this.practiceQuestions,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'explanation': explanation.map((e) => e.toJson()).toList(),
+      'dialogue': dialogue.map((e) => e.toJson()).toList(),
+      'commonPitfall': commonPitfall?.toJson(),
+      'proTip': proTip,
+      'examples': examples.map((e) => e.toJson()).toList(),
+      'practiceQuestions': practiceQuestions.map((q) => q.toJson()).toList(),
+    };
+  }
 
   factory LessonContent.fromJson(Map<String, dynamic> json) {
     return LessonContent(
@@ -19,12 +37,75 @@ class LessonContent {
       explanation: (json['explanation'] as List? ?? [])
           .map((e) => LessonSegment.fromJson(e))
           .toList(),
+      dialogue: (json['dialogue'] as List? ?? [])
+          .map((e) => LessonDialogueLine.fromJson(e))
+          .toList(),
+      commonPitfall: json['commonPitfall'] != null
+          ? LessonCommonPitfall.fromJson(json['commonPitfall'])
+          : null,
+      proTip: json['proTip'],
       examples: (json['examples'] as List? ?? [])
           .map((e) => LessonExample.fromJson(e))
           .toList(),
       practiceQuestions: (json['practiceQuestions'] as List? ?? [])
           .map((q) => LessonPracticeQuestion.fromJson(q))
           .toList(),
+    );
+  }
+}
+
+class LessonDialogueLine {
+  final String speaker;
+  final String text;
+  final String translation;
+
+  LessonDialogueLine({
+    required this.speaker,
+    required this.text,
+    required this.translation,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'speaker': speaker,
+      'text': text,
+      'translation': translation,
+    };
+  }
+
+  factory LessonDialogueLine.fromJson(Map<String, dynamic> json) {
+    return LessonDialogueLine(
+      speaker: json['speaker'] ?? '',
+      text: json['text'] ?? '',
+      translation: json['translation'] ?? '',
+    );
+  }
+}
+
+class LessonCommonPitfall {
+  final String error;
+  final String correction;
+  final String explanation;
+
+  LessonCommonPitfall({
+    required this.error,
+    required this.correction,
+    required this.explanation,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'error': error,
+      'correction': correction,
+      'explanation': explanation,
+    };
+  }
+
+  factory LessonCommonPitfall.fromJson(Map<String, dynamic> json) {
+    return LessonCommonPitfall(
+      error: json['error'] ?? '',
+      correction: json['correction'] ?? '',
+      explanation: json['explanation'] ?? '',
     );
   }
 }
@@ -37,6 +118,13 @@ class LessonSegment {
     required this.targetText,
     required this.english,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'targetText': targetText,
+      'english': english,
+    };
+  }
 
   factory LessonSegment.fromJson(Map<String, dynamic> json) {
     return LessonSegment(
@@ -56,6 +144,14 @@ class LessonExample {
     required this.english,
     this.note,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'targetText': targetText,
+      'english': english,
+      'note': note,
+    };
+  }
 
   factory LessonExample.fromJson(Map<String, dynamic> json) {
     return LessonExample(
@@ -79,6 +175,15 @@ class LessonPracticeQuestion {
     required this.explanation,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'question': question,
+      'options': options,
+      'correctIndex': correctIndex,
+      'explanation': explanation,
+    };
+  }
+
   factory LessonPracticeQuestion.fromJson(Map<String, dynamic> json) {
     // Robustly handle index potentially being a String or Number from AI
     int cIndex = 0;
@@ -98,17 +203,20 @@ class LessonPracticeQuestion {
 }
 
 class LessonClarification {
-  final String deeperExplanation;
+  final String comparisonPoint;
+  final String stepByStepExplanation;
   final List<LessonExample> newExamples;
 
   LessonClarification({
-    required this.deeperExplanation,
+    required this.comparisonPoint,
+    required this.stepByStepExplanation,
     required this.newExamples,
   });
 
   factory LessonClarification.fromJson(Map<String, dynamic> json) {
     return LessonClarification(
-      deeperExplanation: json['deeperExplanation'] ?? '',
+      comparisonPoint: json['comparisonPoint'] ?? '',
+      stepByStepExplanation: json['stepByStepExplanation'] ?? json['deeperExplanation'] ?? '',
       newExamples: (json['newExamples'] as List? ?? [])
           .map((e) => LessonExample.fromJson(e))
           .toList(),

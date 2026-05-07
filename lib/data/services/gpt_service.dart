@@ -202,6 +202,7 @@ class GptService {
       explanation: [
         LessonSegment(targetText: 'Error.', english: 'Unable to load lesson.')
       ],
+      dialogue: [],
       examples: [],
       practiceQuestions: [],
     );

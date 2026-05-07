@@ -138,7 +138,8 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
       // Initialize or reset if the level changed and current word is no longer valid
       Future.microtask(() {
         setState(() {
-          _nouns = currentNouns;
+          _allNouns = currentNouns;
+          _pendingNouns = List.from(currentNouns)..shuffle();
           _nextWord();
         });
       });
@@ -307,8 +308,7 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
       }
     }
 
-    return Expanded(
-      child: InkWell(
+    return InkWell(
         onTap: () => _checkAnswer(article),
         borderRadius: BorderRadius.circular(16),
         child: AnimatedContainer(
@@ -330,7 +330,6 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 }

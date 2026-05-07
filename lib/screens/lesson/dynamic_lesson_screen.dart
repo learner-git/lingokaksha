@@ -5,6 +5,7 @@ import '../../providers/lesson_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../data/models/lesson_model.dart';
 import '../../data/services/gpt_service.dart';
+import '../../data/services/audio_service.dart';
 
 class DynamicLessonScreen extends ConsumerStatefulWidget {
   final String topic;
@@ -95,6 +96,21 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
           Text(lesson.title, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: primaryTextColor)),
           const SizedBox(height: 16),
           ...lesson.explanation.map((segment) => _buildExplanationSegment(segment, isDark, primaryTextColor, secondaryTextColor)),
+
+          if (lesson.dialogue.isNotEmpty) ...[
+            const SizedBox(height: 32),
+            _buildDialogueSection(lesson.dialogue, isDark, primaryTextColor, secondaryTextColor),
+          ],
+
+          if (lesson.proTip != null && lesson.proTip!.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            _buildProTip(lesson.proTip!, isDark),
+          ],
+
+          if (lesson.commonPitfall != null) ...[
+            const SizedBox(height: 24),
+            _buildCommonPitfall(lesson.commonPitfall!, isDark, primaryTextColor),
+          ],
           
           if (_clarification == null && !_isClarifying)
             Padding(
@@ -139,7 +155,7 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Text(_clarification!.deeperExplanation, style: TextStyle(fontSize: 15, height: 1.5, color: primaryTextColor)),
+                  Text(_clarification!.stepByStepExplanation, style: TextStyle(fontSize: 15, height: 1.5, color: primaryTextColor)),
                   if (_clarification!.newExamples.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     Text('Additional Examples:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: primaryTextColor)),
@@ -191,7 +207,7 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
 
   Widget _buildExplanationSegment(LessonSegment segment, bool isDark, Color primaryTextColor, Color secondaryTextColor) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.primary.withOpacity(isDark ? 0.1 : 0.04),
@@ -201,15 +217,141 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            segment.targetText,
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primaryTextColor, height: 1.4),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  segment.targetText,
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primaryTextColor, height: 1.4),
+                ),
+              ),
+              IconButton(
+                onPressed: () => ref.read(audioServiceProvider).pronounce(segment.targetText),
+                icon: const Icon(Icons.volume_up, size: 20, color: AppColors.primary),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             segment.english,
             style: TextStyle(fontSize: 15, color: secondaryTextColor, height: 1.4),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDialogueSection(List<LessonDialogueLine> dialogue, bool isDark, Color primaryTextColor, Color secondaryTextColor) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Dialogue', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: primaryTextColor)),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.surfaceVariantDark : Colors.grey.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: isDark ? AppColors.dividerDark : Colors.grey.withOpacity(0.1)),
+          ),
+          child: Column(
+            children: dialogue.map((line) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: AppColors.primary.withOpacity(0.2),
+                    child: Text(line.speaker[0], style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 14)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(line.speaker, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: secondaryTextColor)),
+                        const SizedBox(height: 2),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: Text(line.text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: primaryTextColor))),
+                            IconButton(
+                              onPressed: () => ref.read(audioServiceProvider).pronounce(line.text),
+                              icon: const Icon(Icons.volume_up, size: 18, color: AppColors.primary),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ],
+                        ),
+                        Text(line.translation, style: TextStyle(fontSize: 14, color: secondaryTextColor, fontStyle: FontStyle.italic)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProTip(String proTip, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.secondary.withOpacity(isDark ? 0.1 : 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.secondary.withOpacity(0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.lightbulb, color: AppColors.secondary, size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Pro-Tip', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.secondary, fontSize: 16)),
+                const SizedBox(height: 4),
+                Text(proTip, style: TextStyle(fontSize: 14, height: 1.5, color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommonPitfall(LessonCommonPitfall pitfall, bool isDark, Color primaryTextColor) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.error.withOpacity(isDark ? 0.1 : 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.error.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 20),
+              SizedBox(width: 8),
+              Text('Common Pitfall', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.error)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text('❌ ${pitfall.error}', style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 4),
+          Text('✅ ${pitfall.correction}', style: const TextStyle(color: AppColors.success, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 8),
+          Text(pitfall.explanation, style: TextStyle(fontSize: 14, color: primaryTextColor, height: 1.4)),
         ],
       ),
     );
@@ -228,7 +370,18 @@ class _DynamicLessonScreenState extends ConsumerState<DynamicLessonScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(ex.targetText, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: Text(ex.targetText, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary))),
+              IconButton(
+                onPressed: () => ref.read(audioServiceProvider).pronounce(ex.targetText),
+                icon: const Icon(Icons.volume_up, size: 20, color: AppColors.primary),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+            ],
+          ),
           Text(ex.english, style: TextStyle(fontSize: 14, color: secondaryTextColor)),
           if (ex.note != null) ...[
             const Divider(height: 20),

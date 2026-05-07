@@ -8,6 +8,7 @@ import '../../providers/session_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../data/services/gpt_service.dart';
 import '../../data/models/lesson_model.dart';
+import '../../data/services/audio_service.dart';
 
 class LessonScreen extends ConsumerStatefulWidget {
   final String lessonId;
@@ -82,6 +83,36 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       });
     }
 
+    // Dialogue step
+    if (_lessonContent!.dialogue.isNotEmpty) {
+      steps.add({
+        'type': 'explanation',
+        'title': 'Dialogue',
+        'content': 'Listen and read this conversation.',
+        'dialogue': _lessonContent!.dialogue,
+      });
+    }
+
+    // Common Pitfall
+    if (_lessonContent!.commonPitfall != null) {
+      steps.add({
+        'type': 'explanation',
+        'title': 'Common Pitfall',
+        'content': 'Be careful with this common mistake.',
+        'pitfall': _lessonContent!.commonPitfall,
+      });
+    }
+
+    // Pro Tip
+    if (_lessonContent!.proTip != null && _lessonContent!.proTip!.isNotEmpty) {
+      steps.add({
+        'type': 'explanation',
+        'title': 'Pro-Tip',
+        'content': 'A little something to help you remember.',
+        'proTip': _lessonContent!.proTip,
+      });
+    }
+
     // Example steps
     if (_lessonContent!.examples.isNotEmpty) {
       steps.add({
@@ -145,8 +176,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           children: [
             const Text('🎉', style: TextStyle(fontSize: 52)),
             const SizedBox(height: 12),
-            Text('Lesson Complete!',
-                style: Theme.of(context).textTheme.headlineSmall),
+            const Text('Lesson Complete!',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(
               '$_score / $total correct • +${_score * 5 + 20} XP',
@@ -234,7 +265,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'A2 · Unit 4 · Dativ',
+              'Lesson Progress',
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: AppColors.textSecondary),
             ),
@@ -245,7 +276,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                 value: progress,
                 backgroundColor: AppColors.divider,
                 valueColor:
-                    AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    const AlwaysStoppedAnimation<Color>(AppColors.primary),
                 minHeight: 5,
               ),
             ),
@@ -254,7 +285,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         titleSpacing: 0,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16),
             child: Center(
               child: Text(
                 '${_currentStep + 1}/${_steps.length}',
@@ -266,7 +297,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
               Expanded(
@@ -296,7 +327,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                     .slideY(begin: 0.3, duration: 300.ms)
                     .fadeIn(duration: 300.ms),
 
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Continue / Next button
               SizedBox(
@@ -323,12 +354,12 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 }
 
 // ── Explanation Step ─────────────────────────────────────────────────────────
-class _ExplanationStep extends StatelessWidget {
+class _ExplanationStep extends ConsumerWidget {
   final Map<String, dynamic> step;
   const _ExplanationStep({required this.step});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     return SingleChildScrollView(
       child: Column(
@@ -353,11 +384,24 @@ class _ExplanationStep extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(step['targetText'] as String,
-                      style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          height: 1.5)),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(step['targetText'] as String,
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                height: 1.5)),
+                      ),
+                      IconButton(
+                        onPressed: () => ref.read(audioServiceProvider).pronounce(step['targetText'] as String),
+                        icon: const Icon(Icons.volume_up, size: 22, color: AppColors.primary),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 4),
                   Text(step['english'] as String,
                       style: const TextStyle(
@@ -380,9 +424,22 @@ class _ExplanationStep extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(ex.targetText,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(ex.targetText,
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                        ),
+                        IconButton(
+                          onPressed: () => ref.read(audioServiceProvider).pronounce(ex.targetText),
+                          icon: const Icon(Icons.volume_up, size: 18, color: AppColors.primary),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
                     Text(ex.english,
                         style: const TextStyle(
                             fontSize: 14, color: AppColors.textSecondary)),
@@ -396,6 +453,18 @@ class _ExplanationStep extends StatelessWidget {
                 ),
               ),
             )),
+          ],
+          if (step.containsKey('dialogue')) ...[
+            const SizedBox(height: 16),
+            _buildDialogueSection(step['dialogue'] as List<LessonDialogueLine>, theme, ref),
+          ],
+          if (step.containsKey('pitfall')) ...[
+            const SizedBox(height: 16),
+            _buildCommonPitfall(step['pitfall'] as LessonCommonPitfall),
+          ],
+          if (step.containsKey('proTip')) ...[
+            const SizedBox(height: 16),
+            _buildProTip(step['proTip'] as String),
           ],
           if (step.containsKey('rule')) ...[
             const SizedBox(height: 16),
@@ -428,6 +497,112 @@ class _ExplanationStep extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDialogueSection(List<LessonDialogueLine> dialogue, ThemeData theme, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.divider.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Column(
+        children: dialogue.map((line) => Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: AppColors.primary.withOpacity(0.2),
+                child: Text(line.speaker[0], style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 12)),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(line.speaker, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                    const SizedBox(height: 2),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: Text(line.text, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))),
+                        IconButton(
+                          onPressed: () => ref.read(audioServiceProvider).pronounce(line.text),
+                          icon: const Icon(Icons.volume_up, size: 18, color: AppColors.primary),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                    Text(line.translation, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, fontStyle: FontStyle.italic)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )).toList(),
+      ),
+    );
+  }
+
+  Widget _buildCommonPitfall(LessonCommonPitfall pitfall) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.error.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.error.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 20),
+              SizedBox(width: 8),
+              Text('Common Pitfall', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.error)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text('❌ ${pitfall.error}', style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 4),
+          Text('✅ ${pitfall.correction}', style: const TextStyle(color: AppColors.success, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 8),
+          Text(pitfall.explanation, style: const TextStyle(fontSize: 14, height: 1.4)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProTip(String proTip) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.secondary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.secondary.withOpacity(0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.lightbulb, color: AppColors.secondary, size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Pro-Tip', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.secondary, fontSize: 16)),
+                const SizedBox(height: 4),
+                Text(proTip, style: const TextStyle(fontSize: 14, height: 1.5)),
+              ],
+            ),
+          ),
         ],
       ),
     );

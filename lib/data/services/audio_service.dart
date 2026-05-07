@@ -1,5 +1,6 @@
 import 'package:just_audio/just_audio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../core/constants/app_constants.dart';
 
 part 'audio_service.g.dart';
 
@@ -69,16 +70,13 @@ class AudioService {
   // Calls your backend /api/tts which uses OpenAI TTS (free tier has no TTS,
   // so this uses the gTTS or a free alternative in dev mode)
 
-  Future<String?> getTtsUrl(String text, {String lang = 'de'}) async {
-    // In production: call your backend /api/tts?text=...&lang=de
-    // Returns a pre-signed URL or a data URL
-    // For development: return null (skip TTS)
-    return null;
-  }
-
-  Future<void> pronounce(String text, {String? lang}) async {
-    final language = lang ?? 'de';
-    final url = await getTtsUrl(text, lang: language);
-    if (url != null) await playUrl(url);
+  Future<void> pronounce(String text, {String lang = 'de'}) async {
+    try {
+      final encodedText = Uri.encodeComponent(text);
+      final url = "${AppConstants.apiBaseUrl}/api/tts?text=$encodedText&lang=$lang";
+      await playUrl(url);
+    } catch (e) {
+      print("Pronunciation error: $e");
+    }
   }
 }

@@ -74,7 +74,7 @@
     "english": "to eat",
     "level": "A1",
     "category": "Verben: Unregelmäßig",
-    "example": "Ich esse einen Apfel."
+    "example": "Ich esse einen Abfel."
   },
   {
     "german": "trinken",
@@ -595,7 +595,7 @@
     "example": "Ich nehme die U-Bahn."
   },
   {
-    "german": "bringing",
+    "german": "bringen",
     "english": "to bring",
     "level": "A2",
     "category": "Verben: Unregelmäßig",
@@ -1446,7 +1446,7 @@
     "english": "investment",
     "level": "Business",
     "category": "Finance",
-    "example": "Das ist eine gute Investition."
+    "example": "Das ist eine gute investition."
   },
   {
     "german": "die Versicherung",
@@ -1650,5 +1650,166 @@
     "level": "A2",
     "category": "Verben: Trennbar",
     "example": "Füllen Sie bitte dieses Formular aus."
+  },
+  {
+    "german": "die Mutter",
+    "english": "mother",
+    "level": "A1",
+    "category": "Family",
+    "example": "Meine Mutter ist Lehrerin."
+  },
+  {
+    "german": "der Vater",
+    "english": "father",
+    "level": "A1",
+    "category": "Family",
+    "example": "Mein Vater arbeitet viel."
+  },
+  {
+    "german": "der Bruder",
+    "english": "brother",
+    "level": "A1",
+    "category": "Family",
+    "example": "Ich habe einen Bruder."
+  },
+  {
+    "german": "die Schwester",
+    "english": "sister",
+    "level": "A1",
+    "category": "Family",
+    "example": "Meine Schwester studiert Medizin."
+  },
+  {
+    "german": "blau",
+    "english": "blue",
+    "level": "A1",
+    "category": "Colors",
+    "example": "Der Himmel ist blau."
+  },
+  {
+    "german": "rot",
+    "english": "red",
+    "level": "A1",
+    "category": "Colors",
+    "example": "Die Rose ist rot."
+  },
+  {
+    "german": "grün",
+    "english": "green",
+    "level": "A1",
+    "category": "Colors",
+    "example": "Das Gras ist grün."
+  },
+  {
+    "german": "gelb",
+    "english": "yellow",
+    "level": "A1",
+    "category": "Colors",
+    "example": "Die Sonne ist gelb."
+  },
+  {
+    "german": "schwarz",
+    "english": "black",
+    "level": "A1",
+    "category": "Colors",
+    "example": "Mein Auto ist schwarz."
+  },
+  {
+    "german": "weiß",
+    "english": "white",
+    "level": "A1",
+    "category": "Colors",
+    "example": "Der Schnee ist weiß."
+  },
+  {
+    "german": "eins",
+    "english": "one",
+    "level": "A1",
+    "category": "Numbers",
+    "example": "Eins plus eins ist zwei."
+  },
+  {
+    "german": "zwei",
+    "english": "two",
+    "level": "A1",
+    "category": "Numbers",
+    "example": "Ich habe zwei Katzen."
+  },
+  {
+    "german": "drei",
+    "english": "three",
+    "level": "A1",
+    "category": "Numbers",
+    "example": "Drei Bier, bitte!"
+  },
+  {
+    "german": "der Kopf",
+    "english": "head",
+    "level": "A2",
+    "category": "Body",
+    "example": "Mein Kopf tut weh."
+  },
+  {
+    "german": "der Arm",
+    "english": "arm",
+    "level": "A2",
+    "category": "Body",
+    "example": "Er hat starke Arme."
+  },
+  {
+    "german": "das Bein",
+    "english": "leg",
+    "level": "A2",
+    "category": "Body",
+    "example": "Ich habe mir das Bein gebrochen."
+  },
+  {
+    "german": "die Hand",
+    "english": "hand",
+    "level": "A2",
+    "category": "Body",
+    "example": "Was hast du in der Hand?"
+  },
+  {
+    "german": "der Fuß",
+    "english": "foot",
+    "level": "A2",
+    "category": "Body",
+    "example": "Ich gehe zu Fuß."
+  },
+  {
+    "german": "der Arzt",
+    "english": "doctor",
+    "level": "A2",
+    "category": "Professions",
+    "example": "Ich muss zum Arzt."
+  },
+  {
+    "german": "der Lehrer",
+    "english": "teacher",
+    "level": "A2",
+    "category": "Professions",
+    "example": "Der Lehrer erklärt die Grammatik."
+  },
+  {
+    "german": "die Ausbildung",
+    "english": "apprenticeship/training",
+    "level": "B1",
+    "category": "Work",
+    "example": "Er macht eine Ausbildung zum Mechaniker."
+  },
+  {
+    "german": "die Umwelt",
+    "english": "environment",
+    "level": "B1",
+    "category": "Nature",
+    "example": "Wir müssen die Umwelt schützen."
+  },
+  {
+    "german": "die Gesellschaft",
+    "english": "society",
+    "level": "B1",
+    "category": "Nouns",
+    "example": "Die Gesellschaft verändert sich."
   }
 ]

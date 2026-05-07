@@ -129,6 +129,45 @@ class LessonRepository {
     );
   }
 
+  // ── AI Lesson Cache ───────────────────────────────────────────────────────
+
+  Future<LessonContent?> fetchCachedAiLesson(String language, String level, String topic) async {
+    final docId = _getAiLessonDocId(level, topic);
+    try {
+      final doc = await _db
+          .collection('languages')
+          .doc(language)
+          .collection('ai_cache')
+          .doc(docId)
+          .get();
+      if (doc.exists) {
+        return LessonContent.fromJson(doc.data()!);
+      }
+    } catch (e) {
+      print('Error fetching AI cache from Firestore: $e');
+    }
+    return null;
+  }
+
+  Future<void> cacheAiLesson(String language, String level, String topic, LessonContent content) async {
+    final docId = _getAiLessonDocId(level, topic);
+    try {
+      await _db
+          .collection('languages')
+          .doc(language)
+          .collection('ai_cache')
+          .doc(docId)
+          .set(content.toJson());
+    } catch (e) {
+      print('Error saving AI lesson to Firestore cache: $e');
+    }
+  }
+
+  String _getAiLessonDocId(String level, String topic) {
+    final normalizedTopic = topic.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '_');
+    return '${level.toLowerCase()}_$normalizedTopic';
+  }
+
   // ── Static fallback (offline dev / testing) ───────────────────────────────
 
   List<LessonModel> _staticFallbackLessons(String level) {

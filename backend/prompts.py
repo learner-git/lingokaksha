@@ -104,15 +104,20 @@ Return ONLY a valid JSON object:
 
 def get_lesson_prompt(language: str, level: str, topic: str) -> str:
     return f"""
-You are an expert {language} language teacher and curriculum designer.
-Create a high-quality, CEFR-aligned {level} level {language} lesson on: {topic}
+You are an expert {language} language coach and curriculum designer.
+Create a high-quality, CEFR-aligned {level} level {language} lesson on: {topic}.
 
 Requirements:
-- Break the explanation into 2-3 logical segments (Introduction, Rules, Usage).
-- Each segment MUST have 'targetText' (the {language} text) and 'english' keys.
-- Include exactly 3 new examples with 'targetText' ({language}), 'english' translations and short notes in English.
-- Included 3 practice questions match the level {level}.
-- Return ONLY a valid JSON object.
+1. **Explain like a friend**: Don't just give formal rules; explain the "vibe" of how this is used in real life.
+2. **Real-life Dialogue**: Include a short 4-line dialogue showing this topic in action with speakers (e.g., A: ..., B: ...).
+3. **Common Pitfalls**: Explicitly mention one common mistake students make with this topic and how to avoid it.
+4. **Pro-Tip**: Provide a "Memory Hook" or a shortcut/mnemonic to remember this rule.
+5. **Dynamic Examples**: Provide exactly 5 examples ranging from simple to slightly complex.
+6. **Language Ratio**:
+   - A1/A2: 60% English / 40% {language}
+   - B1/B2: 20% English / 80% {language}
+
+Return ONLY a valid JSON object.
 
 Schema:
 {{
@@ -120,6 +125,11 @@ Schema:
   "explanation": [
     {{ "targetText": "...", "english": "..." }}
   ],
+  "dialogue": [
+    {{ "speaker": "...", "text": "...", "translation": "..." }}
+  ],
+  "commonPitfall": {{ "error": "...", "correction": "...", "explanation": "..." }},
+  "proTip": "...",
   "examples": [
     {{ "targetText": "...", "english": "...", "note": "..." }}
   ],
@@ -131,22 +141,21 @@ Schema:
 
 def get_clarification_prompt(language: str, level: str, topic: str, current_explanation: str) -> str:
     return f"""
-The student is learning about "{topic}" at CEFR level {level}.
-They already know: "{current_explanation}"
-But they need more clarification and a better, more detailed explanation.
-
-Explanation MUST be bilingual in ONE string field:
-- Format EXACTLY as:
-  {language}: <explanation in {language}> \\n English: <English explanation>
+The student is confused about "{topic}" at level {level}.
+Current knowledge context: "{current_explanation}"
 
 Requirements:
-- Provide a deeper, more detailed explanation (max 500 words) for level {level}.
-- Include 2 new, clear examples with 'targetText' ({language}) and 'english' translations.
-- Return ONLY a valid JSON object.
+- **Comparison**: Compare this topic to a similar English concept or another {language} concept to show the difference.
+- **Step-by-step logic**: Break down the rule into a logical flow.
+- **Visual Example**: Use text-based formatting (like arrows or bolding) to show how sentence structure changes.
+- **5 New Examples**: Provide 5 very clear examples with notes.
+
+Return ONLY a valid JSON object.
 
 Schema:
 {{
-  "deeperExplanation": "...",
+  "comparisonPoint": "...",
+  "stepByStepExplanation": "...",
   "newExamples": [
     {{ "targetText": "...", "english": "...", "note": "..." }}
   ]

@@ -391,6 +391,27 @@ async def voice_analysis(
         logger.error(f"Voice Analysis Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/tts")
+async def text_to_speech(text: str, lang: str = "de"):
+    """Generates speech using OpenAI TTS or falls back to a placeholder."""
+    if not STATE["openai"]:
+        # Fallback or error if no TTS provider available
+        raise HTTPException(status_code=503, detail="TTS service not configured")
+
+    try:
+        # Using OpenAI TTS
+        response = await STATE["openai"].audio.speech.create(
+            model="tts-1",
+            voice="alloy", # or 'shimmer', 'echo' etc
+            input=text
+        )
+
+        # We can return the bytes directly as an audio stream
+        return StreamingResponse(response.iter_bytes(), media_type="audio/mpeg")
+    except Exception as e:
+        logger.error(f"TTS Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/health")
 async def health():
     return {
