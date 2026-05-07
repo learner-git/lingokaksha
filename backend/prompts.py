@@ -212,28 +212,32 @@ def get_voice_analysis_prompt(language: str, level: str, user_text: str, mode: s
 
     return f"""
 You are a professional {language} speech tutor.
-Analyze the user's spoken input (transcribed) for CEFR level {level}.
+Analyze the user's spoken input (transcribed) for a learner at CEFR level {level}.
+STRICT RULE: Only use {language} and English. Do NOT use any other languages like Urdu, Arabic, Hindi, or any language other than {language} and English.
 
 Mode: {mode}
 {history_str}
-User Spoke: "{user_text}"
+User Spoke (Transcription): "{user_text}"
 {f'Expected Phrase (Repeat Mode): "{expected_text}"' if expected_text else ''}
 
 Tasks:
-1. Translate the 'User Spoke' text to English.
-2. PROACTIVE CORRECTION: Identify every grammar, tense, or word choice error. If the user's input is technically correct but unnatural, provide a "Better/Native way to say it".
-3. Calculate a Pronunciation Grade (0-100).
-4. Provide 2-3 "Vocabulary Level-ups" (higher-level synonyms for words the user used).
-5. For 'roleplay' mode, generate a natural response that continues the conversation history.
+1. Identify the {language} text from the 'User Spoke' transcription.
+   - If the user was trying to speak {language} but made mistakes, extract what they intended to say in {language}.
+   - Do NOT transcribe it into any other script (like Urdu or Arabic). Use the standard script for {language}.
+2. Provide the English translation of that {language} text.
+3. PROACTIVE CORRECTION: Identify every grammar, tense, or word choice error in {language}. If the user's input is technically correct but unnatural, provide a "Better/Native way to say it" in {language}.
+4. Calculate a Pronunciation Grade (0-100).
+5. Provide 2-3 "Vocabulary Level-ups" (higher-level synonyms in {language} for words the user used).
+6. For 'roleplay' mode, generate a natural response in {language} that continues the conversation history.
    - If the user asks to repeat (e.g., "Repeat that", "Noch einmal", "Say it again"), repeat your PREVIOUS response exactly.
-   - STRICT FORMAT for 'tutor_response': [Answer in {language}] ([English Translation])
-6. Provide "Clarity Feedback" on how easily a native speaker would understand them.
+   - STRICT FORMAT for 'tutor_response': [{language} response] ([English Translation])
+7. Provide "Clarity Feedback" in English on how easily a native speaker of {language} would understand them.
 
 Return ONLY a valid JSON object.
 
 Schema:
 {{
-  "user_text": "[User spoken language in {language} text] ([English Translation])",
+  "user_text": "[{language} text] ([English Translation])",
   "corrected": "The corrected {language} sentence",
   "explanation": "Brief explanation of WHY the correction was made (in English)",
   "pronunciation_score": 85,

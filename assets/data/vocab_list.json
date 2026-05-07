@@ -73,35 +73,35 @@
     "german": "essen",
     "english": "to eat",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich esse einen Apfel."
   },
   {
     "german": "trinken",
     "english": "to drink",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Wir trinken Wasser."
   },
   {
     "german": "gehen",
     "english": "to go",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich gehe nach Hause."
   },
   {
     "german": "kommen",
     "english": "to come",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Woher kommst du?"
   },
   {
     "german": "machen",
     "english": "to do/make",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Was machst du?"
   },
   {
@@ -185,98 +185,98 @@
     "german": "wohnen",
     "english": "to live",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich wohne in Berlin."
   },
   {
     "german": "sprechen",
     "english": "to speak",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich spreche Deutsch."
   },
   {
     "german": "lernen",
     "english": "to learn",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Wir lernen Deutsch."
   },
   {
     "german": "schreiben",
     "english": "to write",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Er schreibt einen Brief."
   },
   {
     "german": "lesen",
     "english": "to read",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich lese ein Buch."
   },
   {
     "german": "hören",
     "english": "to hear",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Hörst du die Musik?"
   },
   {
     "german": "sehen",
     "english": "to see",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich sehe den Baum."
   },
   {
     "german": "kaufen",
     "english": "to buy",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich kaufe Brot."
   },
   {
     "german": "verkaufen",
     "english": "to sell",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Er verkauft sein Auto."
   },
   {
     "german": "helfen",
     "english": "to help",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Kannst du mir helfen?"
   },
   {
     "german": "arbeiten",
     "english": "to work",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich arbeite bei Google."
   },
   {
     "german": "spielen",
     "english": "to play",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Die Kinder spielen Fußball."
   },
   {
     "german": "schlafen",
     "english": "to sleep",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich schlafe gut."
   },
   {
     "german": "laufen",
     "english": "to run",
     "level": "A1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Er läuft schnell."
   },
   {
@@ -437,21 +437,21 @@
     "german": "versuchen",
     "english": "to try",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich versuche es."
   },
   {
     "german": "erzählen",
     "english": "to tell/narrate",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Erzähl mir eine Geschichte."
   },
   {
     "german": "besuchen",
     "english": "to visit",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Wir besuchen meine Oma."
   },
   {
@@ -528,182 +528,182 @@
     "german": "hoffen",
     "english": "to hope",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich hoffe, du kommst."
   },
   {
     "german": "glauben",
     "english": "to believe",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich glaube dir."
   },
   {
     "german": "wissen",
     "english": "to know",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich weiß es nicht."
   },
   {
     "german": "verstehen",
     "english": "to understand",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich verstehe das nicht."
   },
   {
     "german": "fragen",
     "english": "to ask",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Darf ich etwas fragen?"
   },
   {
     "german": "antworten",
     "english": "to answer",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Bitte antworten Sie schnell."
   },
   {
     "german": "suchen",
     "english": "to search",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich suche meinen Schlüssel."
   },
   {
     "german": "finden",
     "english": "to find",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich kann ihn nicht finden."
   },
   {
     "german": "geben",
     "english": "to give",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Gib mir bitte das Buch."
   },
   {
     "german": "nehmen",
     "english": "to take",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich nehme die U-Bahn."
   },
   {
-    "german": "bringen",
+    "german": "bringing",
     "english": "to bring",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Bring mir ein Glas Wasser."
   },
   {
     "german": "holen",
     "english": "to get/fetch",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Soll ich dich abholen?"
   },
   {
     "german": "treffen",
     "english": "to meet",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich treffe mich mit Freunden."
   },
   {
     "german": "kennen",
     "english": "to know (person/place)",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Kennst du Berlin?"
   },
   {
     "german": "heißen",
     "english": "to be called",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Wie heißt das auf Deutsch?"
   },
   {
     "german": "reisen",
     "english": "to travel",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich reise gerne."
   },
   {
     "german": "fliegen",
     "english": "to fly",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Wir fliegen nach London."
   },
   {
     "german": "fahren",
     "english": "to drive/ride",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich fahre mit dem Auto."
   },
   {
     "german": "parken",
     "english": "to park",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Hier darf man nicht parken."
   },
   {
     "german": "bezahlen",
     "english": "to pay",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Wo kann ich bezahlen?"
   },
   {
     "german": "kosten",
     "english": "to cost",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Was kostet das?"
   },
   {
     "german": "bestellen",
     "english": "to order",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich möchte bestellen."
   },
   {
     "german": "essen gehen",
     "english": "to eat out",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Wollen wir essen gehen?"
   },
   {
     "german": "kochen",
     "english": "to cook",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Meine Mutter kocht gut."
   },
   {
     "german": "backen",
     "english": "to bake",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Wir backen einen Kuchen."
   },
   {
     "german": "frühstücken",
     "english": "to eat breakfast",
     "level": "A2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich frühstücke um acht."
   },
   {
@@ -787,21 +787,21 @@
     "german": "entscheiden",
     "english": "to decide",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich kann mich nicht entscheiden."
   },
   {
     "german": "erinnern",
     "english": "to remember",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Erinnerst du dich an mich?"
   },
   {
     "german": "vergleichen",
     "english": "to compare",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Wir vergleichen die Preise."
   },
   {
@@ -857,168 +857,168 @@
     "german": "empfehlen",
     "english": "to recommend",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Was kannst du empfehlen?"
   },
   {
     "german": "erklären",
     "english": "to explain",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Kannst du das erklären?"
   },
   {
     "german": "versprechen",
     "english": "to promise",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Ich verspreche es dir."
   },
   {
     "german": "beschreiben",
     "english": "to describe",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Beschreiben Sie das Bild."
   },
   {
     "german": "besprechen",
     "english": "to discuss",
     "level": "B1",
-    "category": "Verbs",
-    "example": "Wir besprechen das Problem."
+    "category": "Verben: Unregelmäßig",
+    "example": "Wir besprechen das problem."
   },
   {
     "german": "überlegen",
     "english": "to consider/think about",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich muss mir das überlegen."
   },
   {
     "german": "vorstellen",
     "english": "to imagine/introduce",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Trennbar",
     "example": "Darf ich mich vorstellen?"
   },
   {
     "german": "vorbereiten",
     "english": "to prepare",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Trennbar",
     "example": "Ich bereite mich auf die Prüfung vor."
   },
   {
     "german": "stattfinden",
     "english": "to take place",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Trennbar",
     "example": "Das Konzert findet heute statt."
   },
   {
     "german": "teilnehmen",
     "english": "to participate",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Trennbar",
     "example": "Ich möchte am Kurs teilnehmen."
   },
   {
     "german": "einladen",
     "english": "to invite",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Trennbar",
     "example": "Ich lade dich zu meiner Party ein."
   },
   {
     "german": "aussehen",
     "english": "to look like",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Trennbar",
     "example": "Du siehst gut aus."
   },
   {
     "german": "gefallen",
     "english": "to like (something pleases you)",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Die Musik gefällt mir."
   },
   {
     "german": "gehören",
     "english": "to belong to",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Gehört das dir?"
   },
   {
     "german": "passen",
     "english": "to fit/suit",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Die Hose passt mir nicht."
   },
   {
     "german": "fehlen",
     "english": "to be missing/lack",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Hier fehlt ein Wort."
   },
   {
     "german": "scheinen",
     "english": "to seem/shine",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Die Sonne scheint."
   },
   {
     "german": "ändern",
     "english": "to change",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich möchte meine Pläne ändern."
   },
   {
     "german": "verbessern",
     "english": "to improve",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Ich möchte mein Deutsch verbessern."
   },
   {
     "german": "verringern",
     "english": "to reduce",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Wir müssen die Kosten verringern."
   },
   {
     "german": "erhöhen",
     "english": "to increase",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Die Preise erhöhen sich ständig."
   },
   {
     "german": "bestätigen",
     "english": "to confirm",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Können Sie den Termin bestätigen?"
   },
   {
     "german": "absagen",
     "english": "to cancel",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Trennbar",
     "example": "Ich muss den Termin leider absagen."
   },
   {
     "german": "verschieben",
     "english": "to postpone",
     "level": "B1",
-    "category": "Verbs",
+    "category": "Verben: Unregelmäßig",
     "example": "Können wir das Treffen verschieben?"
   },
   {
@@ -1113,6 +1113,62 @@
     "example": "Alles ist gut."
   },
   {
+    "german": "aufstehen",
+    "english": "to get up",
+    "level": "A1",
+    "category": "Verben: Trennbar",
+    "example": "Ich stehe um sieben Uhr auf."
+  },
+  {
+    "german": "anrufen",
+    "english": "to call (phone)",
+    "level": "A1",
+    "category": "Verben: Trennbar",
+    "example": "Ich rufe dich morgen an."
+  },
+  {
+    "german": "einkaufen",
+    "english": "to shop",
+    "level": "A1",
+    "category": "Verben: Trennbar",
+    "example": "Wir kaufen im Supermarkt ein."
+  },
+  {
+    "german": "fernsehen",
+    "english": "to watch TV",
+    "level": "A1",
+    "category": "Verben: Trennbar",
+    "example": "Abends sehe ich gerne fern."
+  },
+  {
+    "german": "mitkommen",
+    "english": "to come along",
+    "level": "A1",
+    "category": "Verben: Trennbar",
+    "example": "Kommst du mit?"
+  },
+  {
+    "german": "abholen",
+    "english": "to pick up",
+    "level": "A2",
+    "category": "Verben: Trennbar",
+    "example": "Ich hole dich vom Bahnhof ab."
+  },
+  {
+    "german": "anfangen",
+    "english": "to begin/start",
+    "level": "A1",
+    "category": "Verben: Trennbar",
+    "example": "Der Kurs fängt um neun an."
+  },
+  {
+    "german": "aufhören",
+    "english": "to stop",
+    "level": "A1",
+    "category": "Verben: Trennbar",
+    "example": "Wann hört die Arbeit auf?"
+  },
+  {
     "german": "die Nachhaltigkeit",
     "english": "sustainability",
     "level": "B2",
@@ -1137,21 +1193,21 @@
     "german": "beeinflussen",
     "english": "to influence",
     "level": "B2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Das Wetter beeinflusst meine Laune."
   },
   {
     "german": "entwickeln",
     "english": "to develop",
     "level": "B2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Wir entwickeln eine neue App."
   },
   {
     "german": "fördern",
     "english": "to promote/support",
     "level": "B2",
-    "category": "Verbs",
+    "category": "Verben: Regelmäßig",
     "example": "Der Staat fördert kleine Firmen."
   },
   {
@@ -1369,7 +1425,7 @@
     "english": "profit",
     "level": "Business",
     "category": "Finance",
-    "example": "Die Firma macht hohen Gewinn."
+    "example": "Die firma macht hohen Gewinn."
   },
   {
     "german": "der Verlust",
@@ -1440,5 +1496,159 @@
     "level": "Business",
     "category": "Finance",
     "example": "Brauchen Sie eine Quittung?"
+  },
+  {
+    "german": "der Apfel",
+    "english": "apple",
+    "level": "A1",
+    "category": "Food",
+    "example": "Ich esse einen Apfel."
+  },
+  {
+    "german": "die Banane",
+    "english": "banana",
+    "level": "A1",
+    "category": "Food",
+    "example": "Die Banane ist gelb."
+  },
+  {
+    "german": "das Brot",
+    "english": "bread",
+    "level": "A1",
+    "category": "Food",
+    "example": "Kaufst du bitte Brot?"
+  },
+  {
+    "german": "das Wasser",
+    "english": "water",
+    "level": "A1",
+    "category": "Food",
+    "example": "Ein Glas Wasser, bitte."
+  },
+  {
+    "german": "der Kaffee",
+    "english": "coffee",
+    "level": "A1",
+    "category": "Food",
+    "example": "Ich trinke morgens Kaffee."
+  },
+  {
+    "german": "die Milch",
+    "english": "milk",
+    "level": "A1",
+    "category": "Food",
+    "example": "Möchten Sie Milch im Kaffee?"
+  },
+  {
+    "german": "der Zucker",
+    "english": "sugar",
+    "level": "A1",
+    "category": "Food",
+    "example": "Ohne Zucker, bitte."
+  },
+  {
+    "german": "das Salz",
+    "english": "salt",
+    "level": "A1",
+    "category": "Food",
+    "example": "Das Essen braucht mehr Salz."
+  },
+  {
+    "german": "der Tisch",
+    "english": "table",
+    "level": "A1",
+    "category": "House",
+    "example": "Der Apfel liegt auf dem Tisch."
+  },
+  {
+    "german": "der Stuhl",
+    "english": "chair",
+    "level": "A1",
+    "category": "House",
+    "example": "Setz dich auf den Stuhl."
+  },
+  {
+    "german": "das Bett",
+    "english": "bed",
+    "level": "A1",
+    "category": "House",
+    "example": "Das Bett ist bequem."
+  },
+  {
+    "german": "das Fenster",
+    "english": "window",
+    "level": "A1",
+    "category": "House",
+    "example": "Mach bitte das Fenster zu."
+  },
+  {
+    "german": "die Tür",
+    "english": "door",
+    "level": "A1",
+    "category": "House",
+    "example": "Die Tür ist offen."
+  },
+  {
+    "german": "die Küche",
+    "english": "kitchen",
+    "level": "A1",
+    "category": "House",
+    "example": "Ich bin in der Küche."
+  },
+  {
+    "german": "das Bad",
+    "english": "bathroom",
+    "level": "A1",
+    "category": "House",
+    "example": "Wo ist das Bad?"
+  },
+  {
+    "german": "das Wohnzimmer",
+    "english": "living room",
+    "level": "A1",
+    "category": "House",
+    "example": "Wir sehen im Wohnzimmer fern."
+  },
+  {
+    "german": "fallen",
+    "english": "to fall",
+    "level": "A2",
+    "category": "Verben: Unregelmäßig",
+    "example": "Der Apfel fällt vom Baum."
+  },
+  {
+    "german": "fangen",
+    "english": "to catch",
+    "level": "A2",
+    "category": "Verben: Unregelmäßig",
+    "example": "Kannst du den Ball fangen?"
+  },
+  {
+    "german": "lassen",
+    "english": "to let/leave",
+    "level": "A2",
+    "category": "Verben: Unregelmäßig",
+    "example": "Lass mich in Ruhe."
+  },
+  {
+    "german": "halten",
+    "english": "to hold/stop",
+    "level": "A2",
+    "category": "Verben: Unregelmäßig",
+    "example": "Der Zug hält in Berlin."
+  },
+  {
+    "german": "vorlesen",
+    "english": "to read aloud",
+    "level": "A2",
+    "category": "Verben: Trennbar",
+    "example": "Soll ich dir eine Geschichte vorlesen?"
+  },
+  {
+    "german": "ausfüllen",
+    "english": "to fill out",
+    "level": "A2",
+    "category": "Verben: Trennbar",
+    "example": "Füllen Sie bitte dieses Formular aus."
   }
 ]

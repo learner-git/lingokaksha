@@ -15,7 +15,8 @@ class ArticleGameScreen extends ConsumerStatefulWidget {
 }
 
 class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
-  List<VocabCard> _nouns = [];
+  List<VocabCard> _allNouns = [];
+  List<VocabCard> _pendingNouns = [];
   VocabCard? _currentWord;
   String? _selectedArticle;
   bool _isCorrect = false;
@@ -47,17 +48,24 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
     final language = ref.read(selectedLanguageProvider);
     final articles = _getArticles(language).map((e) => e.toLowerCase()).toList();
 
-    _nouns = allCards.where((card) {
+    _allNouns = allCards.where((card) {
       final g = card.targetText.toLowerCase();
       return articles.any((article) => g.startsWith('$article '));
     }).toList();
+    _pendingNouns = List.from(_allNouns)..shuffle();
     _nextWord();
   }
 
   void _nextWord() {
-    if (_nouns.isEmpty) return;
+    if (_pendingNouns.isEmpty && _allNouns.isNotEmpty) {
+      // Refresh session if all done
+      _pendingNouns = List.from(_allNouns)..shuffle();
+    }
+    
+    if (_pendingNouns.isEmpty) return;
+
     setState(() {
-      _currentWord = _nouns[_random.nextInt(_nouns.length)];
+      _currentWord = _pendingNouns.first;
       _selectedArticle = null;
       _answered = false;
       _isCorrect = false;
@@ -68,11 +76,22 @@ class _ArticleGameScreenState extends ConsumerState<ArticleGameScreen> {
     if (_answered || _currentWord == null) return;
 
     final correctArticle = _currentWord!.targetText.split(' ')[0].toLowerCase();
+    final isCorrect = article.toLowerCase() == correctArticle;
+    
     setState(() {
       _selectedArticle = article;
       _answered = true;
-      _isCorrect = article.toLowerCase() == correctArticle;
+      _isCorrect = isCorrect;
     });
+
+    if (isCorrect) {
+      // Remove from pending if correct
+      _pendingNouns.removeAt(0);
+    } else {
+      // Failed: move to end of queue to come back later
+      final failedWord = _pendingNouns.removeAt(0);
+      _pendingNouns.add(failedWord);
+    }
   }
 
   @override

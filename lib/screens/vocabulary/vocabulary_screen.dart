@@ -21,6 +21,8 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabCtrl;
   bool _flipped = false;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -31,6 +33,7 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
   @override
   void dispose() {
     _tabCtrl.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -197,42 +200,87 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
   }
 
   Widget _buildWordListTab() {
-    final allCards = ref.watch(allVocabCardsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryTextColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
     final secondaryTextColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
+    final language = ref.watch(selectedLanguageProvider);
 
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: allCards.length,
-      separatorBuilder: (_, __) => Divider(height: 1, color: isDark ? AppColors.dividerDark : AppColors.divider),
-      itemBuilder: (context, i) {
-        final card = allCards[i];
-        return ListTile(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => WordDetailScreen(word: card.targetText, level: card.level),
+    // If searching, we show cards from ALL levels for that language
+    List<VocabCard> displayCards;
+    if (_searchQuery.isEmpty) {
+      displayCards = ref.watch(allVocabCardsProvider);
+    } else {
+      final allRepoCards = ref.read(vocabRepositoryProvider).getAllCards();
+      displayCards = allRepoCards.where((c) {
+        final matchesQuery = c.targetText.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            c.english.toLowerCase().contains(_searchQuery.toLowerCase());
+        final matchesLang = (c.category?.toLowerCase() == language.toLowerCase() || language == 'german');
+        return matchesQuery && matchesLang;
+      }).toList();
+    }
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            controller: _searchController,
+            onChanged: (val) => setState(() => _searchQuery = val),
+            decoration: InputDecoration(
+              hintText: 'Search words across all levels...',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _searchQuery.isNotEmpty 
+                  ? IconButton(icon: const Icon(Icons.clear), onPressed: () {
+                      _searchController.clear();
+                      setState(() => _searchQuery = '');
+                    }) 
+                  : null,
+              filled: true,
+              fillColor: isDark ? AppColors.surfaceVariantDark : Colors.grey.shade100,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
               ),
-            );
-          },
-          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          title: Text(card.targetText, style: TextStyle(fontWeight: FontWeight.w600, color: primaryTextColor)),
-          subtitle: Text(card.english, style: TextStyle(color: secondaryTextColor)),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(card.isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: card.isFavorite ? Colors.red : (isDark ? AppColors.textHintDark : null), size: 20),
-                onPressed: () => ref.read(vocabReviewNotifierProvider.notifier).toggleFavorite(card.id),
-              ),
-              _LevelBadge(level: card.level),
-            ],
+            ),
           ),
-        );
-      },
+        ),
+        Expanded(
+          child: displayCards.isEmpty 
+            ? Center(child: Text(_searchQuery.isEmpty ? 'No words found' : 'No matches found for "$_searchQuery"', style: TextStyle(color: secondaryTextColor)))
+            : ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: displayCards.length,
+                separatorBuilder: (_, __) => Divider(height: 1, color: isDark ? AppColors.dividerDark : AppColors.divider),
+                itemBuilder: (context, i) {
+                  final card = displayCards[i];
+                  return ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => WordDetailScreen(word: card.targetText, level: card.level),
+                        ),
+                      );
+                    },
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    title: Text(card.targetText, style: TextStyle(fontWeight: FontWeight.w600, color: primaryTextColor)),
+                    subtitle: Text(card.english, style: TextStyle(color: secondaryTextColor)),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(card.isFavorite ? Icons.favorite : Icons.favorite_border,
+                              color: card.isFavorite ? Colors.red : (isDark ? AppColors.textHintDark : null), size: 20),
+                          onPressed: () => ref.read(vocabReviewNotifierProvider.notifier).toggleFavorite(card.id),
+                        ),
+                        _LevelBadge(level: card.level),
+                      ],
+                    ),
+                  );
+                },
+              ),
+        ),
+      ],
     );
   }
 
