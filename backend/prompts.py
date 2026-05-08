@@ -37,28 +37,7 @@ You are an expert {language} teacher and exam creator.
 Generate {count} challenging, exam-level multiple-choice questions for CEFR level {level}.
 Topic: {topic}
 
-Requirements:
-- Questions must test deep understanding (not basic recall).
-- Include a mix of:
-  - Grammar in context (sentence completion)
-  - Error detection
-  - Meaning/usage differences
-  - Real-life scenarios
-- Use realistic, natural {language} sentences.
-- Detailed explanation for the answer in both English and {language}.
-- Return ONLY a valid JSON object.
-
-Rules:
-- Avoid obvious or trivial and duplicate answers.
-- Exactly 4 options per question.
-- Only one correct answer (0-based correctIndex).
-
-Quality:
-- Match difficulty to {level} (slightly challenging).
-- Avoid repetition.
-- Focus on common learner mistakes and tricky concepts.
-
-Schema:
+STRICT JSON SCHEMA (Return ONLY this object):
 {{
   "questions": [
     {{
@@ -66,27 +45,27 @@ Schema:
       "question": "...",
       "options": ["...", "...", "...", "..."],
       "correctIndex": 0,
-      "explanation": "...",
+      "explanation": "Detailed explanation in English and {language}",
       "topic": "{topic}",
       "level": "{level}"
     }}
   ]
 }}
+
+Requirements:
+- Questions must test deep understanding (not basic recall).
+- Include a mix of: Grammar in context, error detection, and real-life scenarios.
+- Exactly 4 options per question.
+- Exactly 1 correct answer (0-based correctIndex).
+- Return ONLY valid JSON.
 """
 
 def get_exam_prompt(language: str, level: str, topic: str) -> str:
     return f"""
-You are an official {language} Language Examiner for Goethe and TELC-style institutes.
+You are an official {language} Language Examiner.
 Create a 15-question professional Mock Test based on official {topic} standards for level {level}.
 
-Requirements:
-- Mimic official language proficiency test formats for {language}.
-- Focus on: Advanced Grammar, Formal Contexts, and Nuanced Vocabulary.
-- 15 questions total.
-- Exactly 4 options each.
-- Detailed explanation for every correct answer in English and {language}.
-
-Return ONLY a valid JSON object:
+STRICT JSON SCHEMA (Return ONLY this object):
 {{
   "questions": [
     {{
@@ -94,12 +73,19 @@ Return ONLY a valid JSON object:
       "question": "...",
       "options": ["...", "...", "...", "..."],
       "correctIndex": 0,
-      "explanation": "...",
+      "explanation": "Detailed explanation in English and {language}",
       "topic": "{topic}",
       "level": "{level}"
     }}
   ]
 }}
+
+Requirements:
+- Mimic official language proficiency test formats.
+- Focus on: Advanced Grammar, Formal Contexts, and Nuanced Vocabulary.
+- 15 questions total.
+- Exactly 4 options each.
+- Return ONLY valid JSON.
 """
 
 def get_lesson_prompt(language: str, level: str, topic: str) -> str:
@@ -107,36 +93,35 @@ def get_lesson_prompt(language: str, level: str, topic: str) -> str:
 You are an expert {language} language coach and curriculum designer.
 Create a high-quality, CEFR-aligned {level} level {language} lesson on: {topic}.
 
+STRICT JSON SCHEMA (Return ONLY this object):
+{{
+  "title": "A short, engaging title",
+  "explanation": [
+    {{ "targetText": "Phrase in {language}", "english": "Explanation in English" }}
+  ],
+  "dialogue": [
+    {{ "speaker": "Name", "text": "Speech in {language}", "translation": "English translation" }}
+  ],
+  "commonPitfall": {{ "error": "Common mistake", "correction": "Correct way", "explanation": "Why?" }},
+  "proTip": "A memory hook or shortcut",
+  "examples": [
+    {{ "targetText": "Sentence in {language}", "english": "English translation", "note": "Grammar note" }}
+  ],
+  "practiceQuestions": [
+    {{ "question": "Question in {language}", "options": ["A", "B", "C"], "correctIndex": 0, "explanation": "Why A is correct" }}
+  ]
+}}
+
 Requirements:
-1. **Explain like a friend**: Don't just give formal rules; explain the "vibe" of how this is used in real life.
-2. **Real-life Dialogue**: Include a short 4-line dialogue showing this topic in action with speakers (e.g., A: ..., B: ...).
-3. **Common Pitfalls**: Explicitly mention one common mistake students make with this topic and how to avoid it.
-4. **Pro-Tip**: Provide a "Memory Hook" or a shortcut/mnemonic to remember this rule.
-5. **Dynamic Examples**: Provide exactly 5 examples ranging from simple to slightly complex.
-6. **Language Ratio**:
+1. **Explanation**: 3-4 bullet points explaining the "vibe" and usage.
+2. **Dialogue**: Short 4-line conversation.
+3. **Examples**: Exactly 5 examples (simple to complex).
+4. **Practice**: Exactly 3-5 multiple-choice questions.
+5. **Language Ratio**:
    - A1/A2: 60% English / 40% {language}
    - B1/B2: 20% English / 80% {language}
 
-Return ONLY a valid JSON object.
-
-Schema:
-{{
-  "title": "...",
-  "explanation": [
-    {{ "targetText": "...", "english": "..." }}
-  ],
-  "dialogue": [
-    {{ "speaker": "...", "text": "...", "translation": "..." }}
-  ],
-  "commonPitfall": {{ "error": "...", "correction": "...", "explanation": "..." }},
-  "proTip": "...",
-  "examples": [
-    {{ "targetText": "...", "english": "...", "note": "..." }}
-  ],
-  "practiceQuestions": [
-    {{ "question": "...", "options": ["...", "...", "..."], "correctIndex": 0, "explanation": "..." }}
-  ]
-}}
+Return ONLY valid JSON.
 """
 
 def get_clarification_prompt(language: str, level: str, topic: str, current_explanation: str) -> str:

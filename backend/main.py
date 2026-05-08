@@ -160,8 +160,14 @@ class VoiceStartRequest(BaseModel):
 
 # --- Core AI Dispatcher ---
 
-async def call_llm(prompt: str, system_instruction: str, json_mode: bool = True, max_tokens: int = 1500) -> Optional[str]:
+async def call_llm(prompt: str, system_instruction: str, json_mode: bool = True, max_tokens: int = 2000) -> Optional[str]:
     """Unified Non-Streaming Dispatcher: Gemini -> Groq -> OpenAI"""
+
+    def is_plausible_json(text: str) -> bool:
+        if not text: return False
+        t = text.strip()
+        # Must at least start with { and contain some content
+        return t.startswith('{') and len(t) > 5
 
     # 1. Gemini (Priority 1)
     if STATE["gemini_available"] and STATE["client"]:
@@ -177,7 +183,10 @@ async def call_llm(prompt: str, system_instruction: str, json_mode: bool = True,
                 contents=prompt,
                 config=config
             )
-            if response.text: return response.text
+            if response.text:
+                if not json_mode or is_plausible_json(response.text):
+                    return response.text
+                logger.warning(f"Gemini returned invalid/truncated JSON: {response.text}")
         except Exception as e:
             logger.warning(f"Gemini failed: {e}")
 
@@ -188,7 +197,7 @@ async def call_llm(prompt: str, system_instruction: str, json_mode: bool = True,
                 STATE["groq"].chat.completions.create(
                     model=GROQ_MODEL,
                     messages=[
-                        {"role": "system", "content": f"{system_instruction} Return ONLY JSON."},
+                        {"role": "system", "content": f"{system_instruction} Return ONLY valid JSON."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"} if json_mode else None,
@@ -196,7 +205,11 @@ async def call_llm(prompt: str, system_instruction: str, json_mode: bool = True,
                     max_tokens=max_tokens
                 ), timeout=DEFAULT_TIMEOUT
             )
-            return resp.choices[0].message.content
+            content = resp.choices[0].message.content
+            if content:
+                if not json_mode or is_plausible_json(content):
+                    return content
+                logger.warning(f"Groq returned invalid JSON: {content}")
         except Exception as e:
             logger.warning(f"Groq failed: {e}")
 
@@ -214,7 +227,9 @@ async def call_llm(prompt: str, system_instruction: str, json_mode: bool = True,
                     temperature=0.3
                 ), timeout=DEFAULT_TIMEOUT
             )
-            return resp.choices[0].message.content
+            content = resp.choices[0].message.content
+            if content:
+                return content
         except Exception as e:
             logger.error(f"All LLMs failed: {e}")
 
@@ -276,16 +291,38 @@ async def stream_llm(messages: List[Dict[str, str]], system_prompt: str) -> Asyn
 
 def clean_and_parse_json(raw: str) -> Dict[str, Any]:
     """Robustly cleans LLM output and parses into a Dict."""
+    if not raw:
+        raise HTTPException(status_code=502, detail="Empty response from AI")
+
     try:
+        # Remove markdown code blocks
         cleaned = re.sub(r"```json\s?|\s?```", "", raw).strip()
+
+        # Find the first { and the last }
         start = cleaned.find('{')
         end = cleaned.rfind('}')
+
         if start != -1 and end != -1:
             cleaned = cleaned[start : end + 1]
+        elif start != -1:
+            # Handle truncated JSON by attempting to close it (last resort)
+            logger.warning("Truncated JSON detected, attempting to close it.")
+            cleaned = cleaned[start:]
+            # Count open/close braces
+            open_braces = cleaned.count('{')
+            close_braces = cleaned.count('}')
+            if open_braces > close_braces:
+                cleaned += '}' * (open_braces - close_braces)
+
+        # Remove trailing commas before closing braces/brackets
         cleaned = re.sub(r',\s*([\]}])', r'\1', cleaned)
+
         return json.loads(cleaned, strict=False)
     except Exception as e:
         logger.error(f"JSON Parse Error. Raw content: {raw}")
+        # Provide a more helpful error if possible
+        if len(raw) < 10:
+             logger.error("AI returned extremely short response, likely failed.")
         raise HTTPException(status_code=500, detail="Invalid AI Response Format")
 
 # --- Endpoints ---
@@ -299,8 +336,8 @@ async def chat_tutor(req: TutorRequest):
 @app.post("/api/quiz")
 async def generate_quiz(req: QuizRequest):
     prompt = prompts.get_quiz_prompt(req.language, req.level, req.topic, req.count)
-    system = f"You are a {req.language} teacher. Return ONLY JSON."
-    raw = await call_llm(prompt, system)
+    system = f"You are a {req.language} teacher. Return ONLY valid JSON matching the schema."
+    raw = await call_llm(prompt, system, max_tokens=2500)
     if not raw: raise HTTPException(502, "AI Service Unavailable")
     return clean_and_parse_json(raw)
 
@@ -315,9 +352,9 @@ async def generate_exam(req: QuizRequest):
 @app.post("/api/lesson")
 async def generate_lesson(req: LessonRequest):
     prompt = prompts.get_lesson_prompt(req.language, req.level, req.topic)
-    system = "You are a curriculum designer. Return JSON only."
-    raw = await call_llm(prompt, system)
-    if not raw: raise HTTPException(502, "Lesson generation failed")
+    system = "You are an expert language curriculum designer. Return ONLY a valid JSON object matching the requested schema."
+    raw = await call_llm(prompt, system, max_tokens=3000)
+    if not raw: raise HTTPException(502, "Lesson generation failed after multiple attempts")
     return clean_and_parse_json(raw)
 
 @app.post("/api/lesson/clarify")
