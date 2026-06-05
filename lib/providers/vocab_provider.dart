@@ -14,8 +14,8 @@ class VocabReviewNotifier extends _$VocabReviewNotifier {
   List<VocabCard> build() {
     final repo = ref.read(vocabRepositoryProvider);
     // Watch the reactive local level and language
-    final level = ref.watch(selectedLevelProvider) ?? 'A1';
-    final language = ref.watch(selectedLanguageProvider);
+    final level = (ref.watch(selectedLevelProvider) ?? 'A1').toUpperCase().trim();
+    final language = ref.watch(selectedLanguageProvider).toLowerCase().trim();
     
     return repo.getDueCards(
       limit: 20, 
@@ -32,9 +32,18 @@ class VocabReviewNotifier extends _$VocabReviewNotifier {
     state = state.where((c) => c.id != id).toList();
   }
 
-  void refreshDue() {
+  Future<void> refreshDue() async {
     final repo = ref.read(vocabRepositoryProvider);
-    state = repo.getDueCards(limit: 20);
+    await repo.seedSampleVocab(); // Ensure seeded
+    final level = (ref.read(selectedLevelProvider) ?? 'A1').toUpperCase();
+    final language = ref.read(selectedLanguageProvider).toLowerCase().trim();
+
+    state = repo.getDueCards(
+      limit: 20,
+      currentLevel: level,
+      targetLevel: level,
+      language: language,
+    );
   }
 
   Future<void> toggleFavorite(String id) async {
@@ -59,11 +68,13 @@ List<VocabCard> favoriteVocabCards(FavoriteVocabCardsRef ref) {
 @riverpod
 List<VocabCard> allVocabCards(AllVocabCardsRef ref) {
   final repo = ref.read(vocabRepositoryProvider);
-  final level = ref.watch(selectedLevelProvider) ?? 'A1';
-  final language = ref.watch(selectedLanguageProvider);
-  
+  final level = (ref.watch(selectedLevelProvider) ?? 'A1').toUpperCase();
+  final language = ref.watch(selectedLanguageProvider).toLowerCase().trim();
+
+  final isGerman = language == 'german';
+
   return repo.getAllCards()
-      .where((c) => c.level == level && (c.category?.toLowerCase() == language.toLowerCase() || language == 'german'))
+      .where((c) => c.level.toUpperCase() == level && (c.category?.toLowerCase() == language || isGerman))
       .toList();
 }
 

@@ -3,12 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../core/constants/app_colors.dart';
+import '../../core/theme/theme_extensions.dart';
+
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = FirebaseAuth.instance.currentUser;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
@@ -22,25 +26,43 @@ class ProfileScreen extends ConsumerWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final data = snapshot.data!.data() as Map<String, dynamic>;
+          final data = snapshot.data!.data() as Map<String, dynamic>? ?? {};
 
           return Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                const CircleAvatar(radius: 40),
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: AppColors.primary,
+                  child: Text(
+                    (data['name'] as String?)?.isNotEmpty == true
+                        ? (data['name'] as String)[0].toUpperCase()
+                        : '?',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 16),
-
-                Text(data['name'] ?? '',
-                    style: const TextStyle(fontSize: 20)),
-
-                Text(data['email'] ?? ''),
-
+                Text(
+                  data['name']?.toString() ?? 'Learner',
+                  style: theme.textTheme.headlineMedium,
+                ),
+                Text(
+                  data['email']?.toString() ?? '',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: context.textSecondary,
+                  ),
+                ),
                 const SizedBox(height: 20),
-
-                _infoTile('Level', data['level']),
-                _infoTile('XP', data['xp'].toString()),
-                _infoTile('Lesson', data['currentLesson']),
+                _infoTile(context, 'Level', data['level']?.toString() ?? '-'),
+                _infoTile(context, 'XP', data['xp']?.toString() ?? '0'),
+                _infoTile(
+                  context,
+                  'Lesson',
+                  data['currentLesson']?.toString() ?? '-',
+                ),
               ],
             ),
           );
@@ -49,10 +71,10 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _infoTile(String title, String value) {
+  Widget _infoTile(BuildContext context, String title, String value) {
     return ListTile(
-      title: Text(title),
-      trailing: Text(value),
+      title: Text(title, style: Theme.of(context).textTheme.titleMedium),
+      trailing: Text(value, style: Theme.of(context).textTheme.bodyLarge),
     );
   }
 }

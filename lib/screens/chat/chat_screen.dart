@@ -35,7 +35,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     setState(() => _isCheckingGrammar = true);
 
     try {
-      final language = ref.read(selectedLanguageProvider);
+      final language = ref.read(selectedLanguageProvider).toLowerCase().trim();
       final feedback = await ref.read(gptServiceProvider).checkGrammar(text, language);
       if (!mounted) return;
 

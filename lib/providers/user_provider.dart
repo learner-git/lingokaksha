@@ -32,7 +32,8 @@ final userProgressProvider = StreamProvider((ref) {
 final selectedLevelProvider = StateProvider<String?>((ref) {
   final progressDoc = ref.watch(userProgressProvider).valueOrNull;
   if (progressDoc != null && progressDoc.exists) {
-    return progressDoc.data()?['level'] as String?;
+    final level = progressDoc.data()?['level'] as String?;
+    return level?.toUpperCase().trim();
   }
   return 'A1';
 });
@@ -41,7 +42,8 @@ final selectedLevelProvider = StateProvider<String?>((ref) {
 final selectedLanguageProvider = StateProvider<String>((ref) {
   final userDoc = ref.watch(userDocProvider).valueOrNull;
   if (userDoc != null && userDoc.exists) {
-    return userDoc.data()?['targetLanguage'] as String? ?? 'german';
+    final lang = userDoc.data()?['targetLanguage'] as String?;
+    return lang?.toLowerCase().trim() ?? 'german';
   }
   return 'german';
 });

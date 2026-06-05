@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart'; // Added for Haptics
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -9,8 +8,10 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:io';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/utils/app_haptics.dart';
 import '../../providers/user_provider.dart';
 import '../../data/services/gpt_service.dart';
+import '../../widgets/common/app_skeleton.dart';
 
 class VoiceTutorScreen extends ConsumerStatefulWidget {
   const VoiceTutorScreen({super.key});
@@ -88,6 +89,7 @@ class _VoiceTutorScreenState extends ConsumerState<VoiceTutorScreen> {
   }
 
   Future<void> _startSession() async {
+    AppHaptics.action();
     setState(() {
       _isSessionActive = true;
       _status = "Initializing AI...";
@@ -130,7 +132,7 @@ class _VoiceTutorScreenState extends ConsumerState<VoiceTutorScreen> {
         _audioPath = '${voiceDir.path}/voice_$timestamp.m4a';
         
         await _recorder.start(const RecordConfig(), path: _audioPath!);
-        HapticFeedback.lightImpact();
+        AppHaptics.light();
 
         setState(() {
           _isRecording = true;
@@ -148,7 +150,7 @@ class _VoiceTutorScreenState extends ConsumerState<VoiceTutorScreen> {
 
   Future<void> _stopAndProcess() async {
     _amplitudeSub?.cancel();
-    HapticFeedback.mediumImpact();
+    AppHaptics.medium();
 
     final path = await _recorder.stop();
     setState(() {
@@ -201,6 +203,7 @@ class _VoiceTutorScreenState extends ConsumerState<VoiceTutorScreen> {
   }
 
   void _endSession() {
+    AppHaptics.action();
     _tts.stop();
     _recorder.stop();
     _amplitudeSub?.cancel();
@@ -280,7 +283,9 @@ class _VoiceTutorScreenState extends ConsumerState<VoiceTutorScreen> {
             )
         ],
       ),
-      body: Padding(
+      body: SafeArea(
+        bottom: true,
+        child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           children: [
@@ -490,10 +495,11 @@ class _VoiceTutorScreenState extends ConsumerState<VoiceTutorScreen> {
             if (_isProcessing)
               const Padding(
                 padding: EdgeInsets.only(top: 40),
-                child: CircularProgressIndicator(),
+                child: AppSkeletonBox(width: 48, height: 48, borderRadius: BorderRadius.all(Radius.circular(24))),
               ),
           ],
         ),
+      ),
       ),
     );
   }

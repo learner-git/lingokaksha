@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/common/brand_logo.dart';
+import '../../widgets/common/google_sign_in_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -77,18 +79,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       const SizedBox(height: 40),
 
                       /// 🔹 LOGO
-                      Container(
-                        width: 64,
-                        height: 64,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: const Center(
-                          child: Text('🌍',
-                              style: TextStyle(fontSize: 34)),
-                        ),
-                      )
+                      const BrandLogo(size: 64)
                           .animate()
                           .scale(duration: 400.ms,
                               curve: Curves.elasticOut),
@@ -233,57 +224,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                       const SizedBox(height: 16),
 
-                      /// 🔥 GOOGLE BUTTON (PREMIUM STYLE)
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: isLoading
-                              ? null
-                              : () async {
-                                  try {
-                                    await ref
-                                        .read(
-                                            authNotifierProvider
-                                                .notifier)
-                                        .signInWithGoogle();
-                                  } catch (e) {
-                                    final message = e
-                                        .toString()
-                                        .replaceFirst(
-                                            'Exception: ', '');
-                                    ScaffoldMessenger.of(
-                                            context)
-                                        .showSnackBar(
-                                      SnackBar(
-                                          content:
-                                              Text(message)),
-                                    );
-                                  }
-                                },
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.g_mobiledata,
-                                  size: 28),
-                              SizedBox(width: 10),
-                              Text(
-                                'Continue with Google',
-                                style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.w600),
-                              ),
-                            ],
-                          ),
-                        ),
+                      GoogleSignInButton(
+                        isLoading: isLoading,
+                        onPressed: () async {
+                          try {
+                            await ref
+                                .read(authNotifierProvider.notifier)
+                                .signInWithGoogle();
+                          } catch (e) {
+                            final message = e
+                                .toString()
+                                .replaceFirst('Exception: ', '');
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(message)),
+                            );
+                          }
+                        },
                       ),
 
                       const SizedBox(height: 12),

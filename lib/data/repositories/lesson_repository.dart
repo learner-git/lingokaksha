@@ -132,11 +132,12 @@ class LessonRepository {
   // ── AI Lesson Cache ───────────────────────────────────────────────────────
 
   Future<LessonContent?> fetchCachedAiLesson(String language, String level, String topic) async {
+    final lang = language.toLowerCase().trim();
     final docId = _getAiLessonDocId(level, topic);
     try {
       final doc = await _db
           .collection('languages')
-          .doc(language)
+          .doc(lang)
           .collection('ai_cache')
           .doc(docId)
           .get();
@@ -144,22 +145,31 @@ class LessonRepository {
         return LessonContent.fromJson(doc.data()!);
       }
     } catch (e) {
-      print('Error fetching AI cache from Firestore: $e');
+      // Permission denied is common if rules aren't set up for this new collection
+      // We log it as a debug message instead of an error to avoid alarming the developer
+      if (e.toString().contains('permission-denied')) {
+        print('AI Cache: Firestore permission denied (check security rules). Falling back to AI.');
+      } else {
+        print('AI Cache: Error fetching from Firestore: $e');
+      }
     }
     return null;
   }
 
   Future<void> cacheAiLesson(String language, String level, String topic, LessonContent content) async {
+    final lang = language.toLowerCase().trim();
     final docId = _getAiLessonDocId(level, topic);
     try {
       await _db
           .collection('languages')
-          .doc(language)
+          .doc(lang)
           .collection('ai_cache')
           .doc(docId)
           .set(content.toJson());
     } catch (e) {
-      print('Error saving AI lesson to Firestore cache: $e');
+      if (!e.toString().contains('permission-denied')) {
+        print('AI Cache: Error saving to Firestore: $e');
+      }
     }
   }
 
@@ -171,6 +181,51 @@ class LessonRepository {
   // ── Static fallback (offline dev / testing) ───────────────────────────────
 
   List<LessonModel> _staticFallbackLessons(String level) {
+    if (level == 'A1') {
+      return [
+        const LessonModel(
+          id: 'a1-intro',
+          title: 'Welcome to German',
+          unit: 'Unit 1',
+          level: 'A1',
+          order: 1,
+          estimatedMinutes: 5,
+          steps: [],
+          vocabulary: ['hallo', 'danke'],
+          grammarPoints: ['Basics'],
+        ),
+      ];
+    }
+    if (level == 'B1') {
+      return [
+        const LessonModel(
+          id: 'b1-past-tense',
+          title: 'Mastering the Past',
+          unit: 'Unit 1',
+          level: 'B1',
+          order: 1,
+          estimatedMinutes: 15,
+          steps: [],
+          vocabulary: ['war', 'hatte'],
+          grammarPoints: ['Präteritum'],
+        ),
+      ];
+    }
+    if (level == 'B2') {
+      return [
+        const LessonModel(
+          id: 'b2-complex-sentences',
+          title: 'Complex Structures',
+          unit: 'Unit 1',
+          level: 'B2',
+          order: 1,
+          estimatedMinutes: 20,
+          steps: [],
+          vocabulary: ['obwohl', 'trotzdem'],
+          grammarPoints: ['Subordinate clauses'],
+        ),
+      ];
+    }
     if (level != 'A2') return [];
     return [
       const LessonModel(

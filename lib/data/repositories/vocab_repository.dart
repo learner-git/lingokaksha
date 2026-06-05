@@ -31,26 +31,38 @@ class VocabRepository {
   }
 
   List<VocabCard> getAllCards() {
-    return _box.values
-        .map((v) => VocabCard(
-              id: v['id'] as String,
-              targetText: (v['targetText'] ?? v['german']) as String,
-              english: v['english'] as String,
-              exampleSentence: v['exampleSentence'] as String?,
-              level: v['level'] as String? ?? 'A1',
-              easeFactor: (v['easeFactor'] as num?)?.toDouble() ?? 2.5,
-              interval: v['interval'] as int? ?? 1,
-              repetitions: v['repetitions'] as int? ?? 0,
-              nextReview: v['nextReview'] != null
-                  ? DateTime.parse(v['nextReview'] as String)
-                  : DateTime.now(),
-              addedAt: v['addedAt'] != null
-                  ? DateTime.parse(v['addedAt'] as String)
-                  : DateTime.now(),
-              category: v['category'] as String?,
-              isFavorite: v['isFavorite'] as bool? ?? false,
-            ))
-        .toList();
+    try {
+      return _box.values
+          .map((v) => VocabCard(
+                id: (v['id'] ?? '') as String,
+                targetText: (v['targetText'] ?? v['german'] ?? '') as String,
+                english: (v['english'] ?? '') as String,
+                exampleSentence: v['exampleSentence'] as String?,
+                level: (v['level'] as String? ?? 'A1').toUpperCase().trim(),
+                easeFactor: (v['easeFactor'] as num?)?.toDouble() ?? 2.5,
+                interval: (v['interval'] as int?) ?? 1,
+                repetitions: (v['repetitions'] as int?) ?? 0,
+                nextReview: v['nextReview'] != null
+                    ? DateTime.tryParse(v['nextReview'] as String) ?? DateTime.now()
+                    : DateTime.now(),
+                addedAt: v['addedAt'] != null
+                    ? DateTime.tryParse(v['addedAt'] as String) ?? DateTime.now()
+                    : DateTime.now(),
+                category: v['category'] as String?,
+                isFavorite: (v['isFavorite'] as bool?) ?? false,
+                examplePresent: v['examplePresent'] as String?,
+                examplePast: v['examplePast'] as String?,
+                exampleFuture: v['exampleFuture'] as String?,
+                translationPresent: v['translationPresent'] as String?,
+                translationPast: v['translationPast'] as String?,
+                translationFuture: v['translationFuture'] as String?,
+              ))
+          .where((c) => c.id.isNotEmpty && c.targetText.isNotEmpty)
+          .toList();
+    } catch (e) {
+      print('Error mapping cards: $e');
+      return [];
+    }
   }
 
   // ── SM-2 review ───────────────────────────────────────────────────────────
@@ -73,6 +85,12 @@ class VocabRepository {
           : DateTime.now(),
       category: raw['category'] as String?,
       isFavorite: raw['isFavorite'] as bool? ?? false,
+      examplePresent: raw['examplePresent'] as String?,
+      examplePast: raw['examplePast'] as String?,
+      exampleFuture: raw['exampleFuture'] as String?,
+      translationPresent: raw['translationPresent'] as String?,
+      translationPast: raw['translationPast'] as String?,
+      translationFuture: raw['translationFuture'] as String?,
     );
 
     final updated = card.reviewed(quality);
@@ -87,19 +105,21 @@ class VocabRepository {
     String? currentLevel, 
     String? targetLevel,
     String? language,
+    bool includeAllIfEmpty = true,
   }) {
     final now = DateTime.now();
     var all = getAllCards();
 
     // Filter by level if provided
     if (currentLevel != null && targetLevel != null) {
-      final levels = _getLevelRange(currentLevel, targetLevel);
-      all = all.where((c) => levels.contains(c.level)).toList();
+      final levels = _getLevelRange(currentLevel.toUpperCase(), targetLevel.toUpperCase());
+      all = all.where((c) => levels.contains(c.level.toUpperCase())).toList();
     }
 
-    // Filter by language if provided (assuming language is stored in category for now or we just use general)
-    if (language != null && language != 'german') {
-       all = all.where((c) => c.category?.toLowerCase() == language.toLowerCase()).toList();
+    // Filter by language if provided
+    final lang = language?.toLowerCase().trim();
+    if (lang != null && lang != 'german') {
+       all = all.where((c) => c.category?.toLowerCase() == lang).toList();
     }
     
     // 1. Get cards that are strictly due
@@ -116,7 +136,17 @@ class VocabRepository {
         .toList();
     
     final combined = [...due, ...newCards];
-    return combined.take(limit).toList();
+    if (combined.length >= limit || !includeAllIfEmpty) {
+      return combined.take(limit).toList();
+    }
+
+    // 3. Fallback: If still not enough, add some already reviewed cards for practice
+    final reviewed = all
+        .where((c) => c.repetitions > 0 && !combined.any((comp) => comp.id == c.id))
+        .toList();
+
+    reviewed.shuffle();
+    return [...combined, ...reviewed].take(limit).toList();
   }
 
   List<String> _getLevelRange(String start, String end) {
@@ -185,39 +215,71 @@ class VocabRepository {
   // ── Seed sample vocab ────────────────────────────────────────────────────
 
   Future<void> seedSampleVocab() async {
-    if (_box.isNotEmpty) return; // Only seed once
+    // Check if we already have a decent number of cards.
+    // Also check if we have cards for major levels to detect partial seeding.
+    final allCards = getAllCards();
+    final levelsPresent = allCards.map((c) => c.level.toUpperCase()).toSet();
+    final hasMainLevels = levelsPresent.contains('A1') && levelsPresent.contains('B1');
+
+    if (allCards.length > 50 && hasMainLevels) return;
     
     try {
-      final String response = await rootBundle.loadString('assets/data/vocab_list.json');
-      final List<dynamic> data = jsonDecode(response);
+      print('Seeding vocabulary data...');
+      // 1. Load the manifest
+      final String manifestStr = await rootBundle.loadString('assets/data/vocab_manifest.json');
+      final Map<String, dynamic> manifest = jsonDecode(manifestStr);
+      final List<dynamic> files = manifest['files'] ?? [];
       
       const uuid = Uuid();
-      final List<VocabCard> cards = data.map((item) {
-        // Handle both old 'german' and new 'targetText' format in JSON
-        final targetText = (item['targetText'] ?? item['german']) as String;
-        
-        // Determine category (language) if not explicitly set
-        // If 'german' key exists, it's a german card
-        String? category = item['category'] as String?;
-        if (category == null && item.containsKey('german')) {
-          category = 'german';
-        }
+      final List<VocabCard> newCardsToSeed = [];
+      final existingTexts = allCards.map((c) => c.targetText.toLowerCase()).toSet();
 
-        return VocabCard(
-          id: uuid.v4(),
-          targetText: targetText,
-          english: item['english'] as String,
-          level: item['level'] as String? ?? 'A1',
-          category: category,
-          exampleSentence: item['example'] as String?,
-        );
-      }).toList();
+      // 2. Load each file
+      for (final fileName in files) {
+        try {
+          final String content = await rootBundle.loadString('assets/data/$fileName');
+          final List<dynamic> data = jsonDecode(content);
+
+          for (final item in data) {
+            final targetText = (item['targetText'] ?? item['german']) as String;
+
+            // Avoid duplicates if seeding partially
+            if (existingTexts.contains(targetText.toLowerCase())) continue;
+
+            String? category = item['category'] as String?;
+            if (category == null && item.containsKey('german')) {
+              category = 'german';
+            }
+
+            newCardsToSeed.add(VocabCard(
+              id: uuid.v4(),
+              targetText: targetText,
+              english: item['english'] as String,
+              level: (item['level'] as String? ?? 'A1').toUpperCase().trim(),
+              category: category,
+              exampleSentence: item['example'] as String?,
+              examplePresent: item['examplePresent'] as String?,
+              examplePast: item['examplePast'] as String?,
+              exampleFuture: item['exampleFuture'] as String?,
+              translationPresent: item['translationPresent'] as String?,
+              translationPast: item['translationPast'] as String?,
+              translationFuture: item['translationFuture'] as String?,
+            ));
+          }
+        } catch (e) {
+          print('Error loading vocab file $fileName: $e');
+        }
+      }
       
-      await addCards(cards);
+      if (newCardsToSeed.isNotEmpty) {
+        await addCards(newCardsToSeed);
+        print('Seeded ${newCardsToSeed.length} new cards.');
+      } else if (allCards.isEmpty) {
+        await _seedFallback();
+      }
     } catch (e) {
       print('Error seeding vocab: $e');
-      // Fallback to minimal hardcoded list if JSON fails
-      await _seedFallback();
+      if (allCards.isEmpty) await _seedFallback();
     }
   }
 

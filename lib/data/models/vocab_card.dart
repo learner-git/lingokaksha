@@ -43,6 +43,24 @@ class VocabCard extends HiveObject {
   @HiveField(12)
   bool isFavorite;
 
+  @HiveField(13)
+  final String? examplePresent;
+
+  @HiveField(14)
+  final String? examplePast;
+
+  @HiveField(15)
+  final String? exampleFuture;
+
+  @HiveField(16)
+  final String? translationPresent;
+
+  @HiveField(17)
+  final String? translationPast;
+
+  @HiveField(18)
+  final String? translationFuture;
+
   VocabCard({
     required this.id,
     required this.targetText,
@@ -57,6 +75,12 @@ class VocabCard extends HiveObject {
     DateTime? addedAt,
     this.category,
     this.isFavorite = false,
+    this.examplePresent,
+    this.examplePast,
+    this.exampleFuture,
+    this.translationPresent,
+    this.translationPast,
+    this.translationFuture,
   })  : nextReview = nextReview ?? DateTime.now(),
         addedAt = addedAt ?? DateTime.now();
 
@@ -98,6 +122,12 @@ class VocabCard extends HiveObject {
       addedAt: addedAt,
       category: category,
       isFavorite: isFavorite,
+      examplePresent: examplePresent,
+      examplePast: examplePast,
+      exampleFuture: exampleFuture,
+      translationPresent: translationPresent,
+      translationPast: translationPast,
+      translationFuture: translationFuture,
     );
   }
 
@@ -112,6 +142,12 @@ class VocabCard extends HiveObject {
     int? repetitions,
     DateTime? nextReview,
     String? category,
+    String? examplePresent,
+    String? examplePast,
+    String? exampleFuture,
+    String? translationPresent,
+    String? translationPast,
+    String? translationFuture,
   }) {
     return VocabCard(
       id: id,
@@ -127,6 +163,12 @@ class VocabCard extends HiveObject {
       addedAt: addedAt,
       category: category ?? this.category,
       isFavorite: isFavorite ?? this.isFavorite,
+      examplePresent: examplePresent ?? this.examplePresent,
+      examplePast: examplePast ?? this.examplePast,
+      exampleFuture: exampleFuture ?? this.exampleFuture,
+      translationPresent: translationPresent ?? this.translationPresent,
+      translationPast: translationPast ?? this.translationPast,
+      translationFuture: translationFuture ?? this.translationFuture,
     );
   }
 
@@ -143,5 +185,11 @@ class VocabCard extends HiveObject {
         'addedAt': addedAt.toIso8601String(),
         'category': category,
         'isFavorite': isFavorite,
+        'examplePresent': examplePresent,
+        'examplePast': examplePast,
+        'exampleFuture': exampleFuture,
+        'translationPresent': translationPresent,
+        'translationPast': translationPast,
+        'translationFuture': translationFuture,
       };
 }

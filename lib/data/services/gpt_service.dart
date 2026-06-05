@@ -187,12 +187,19 @@ class GptService {
   // ─── PRIVATE NETWORK HELPERS ──────────────────────────────────────────────
 
   Future<String> _callBackendProxy(String path, Map<String, dynamic> body) async {
+    final url = '${AppConstants.apiBaseUrl}$path';
     try {
-      final response = await _dio.post('${AppConstants.apiBaseUrl}$path', data: body);
+      final response = await _dio.post(url, data: body);
       if (response.data is Map) return jsonEncode(response.data);
       return response.data.toString();
     } on DioException catch (e) {
-      throw Exception('Backend Proxy Error ($path): ${e.message}');
+      String errorMessage = 'Backend Proxy Error ($path): ${e.message}';
+      if (e.response?.statusCode == 502) {
+        errorMessage = 'AI Service Unavailable (502). The server is running but the AI providers failed to respond. URL: $url';
+      } else if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.connectionError) {
+        errorMessage = 'Cannot reach server at $url. Check if the backend is running and the IP is correct.';
+      }
+      throw Exception(errorMessage);
     }
   }
 

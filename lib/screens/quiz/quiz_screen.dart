@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/utils/app_haptics.dart';
+import '../../core/theme/theme_extensions.dart';
 import '../../providers/quiz_provider.dart';
 import '../../providers/session_provider.dart';
+import '../../widgets/common/app_skeleton.dart';
 
 class QuizScreen extends ConsumerStatefulWidget {
   final String topic;
@@ -43,7 +46,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                 style: theme.textTheme.titleLarge),
             Text('Level ${widget.level}',
                 style: theme.textTheme.bodySmall
-                    ?.copyWith(color: AppColors.textSecondary)),
+                    ?.copyWith(color: context.textSecondary)),
           ],
         ),
         leading: IconButton(
@@ -55,7 +58,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
         ),
       ),
       body: quizState.when(
-        loading: () => const _QuizLoading(),
+        loading: () => const QuizLoadingSkeleton(
+          message: 'GermanShikshak is preparing your quiz...',
+        ),
         error: (e, _) => _QuizError(
           error: e.toString(),
           onRetry: () => ref.read(quizNotifierProvider.notifier).loadQuiz(
@@ -64,7 +69,11 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               ),
         ),
         data: (session) {
-          if (session == null) return const _QuizLoading();
+          if (session == null) {
+            return const QuizLoadingSkeleton(
+              message: 'GermanShikshak is preparing your quiz...',
+            );
+          }
           if (session.completed) {
             return _QuizResult(session: session);
           }
@@ -159,10 +168,18 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                           child: GestureDetector(
                             onTap: answered
                                 ? null
-                                : () => ref
-                                    .read(quizNotifierProvider.notifier)
-                                    .answerQuestion(
-                                        session.currentIndex, i),
+                                : () {
+                                    final isCorrect = i == q.correctIndex;
+                                    if (isCorrect) {
+                                      AppHaptics.success();
+                                    } else {
+                                      AppHaptics.error();
+                                    }
+                                    ref
+                                        .read(quizNotifierProvider.notifier)
+                                        .answerQuestion(
+                                            session.currentIndex, i);
+                                  },
                             child: AnimatedContainer(
                               duration: 200.ms,
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -279,30 +296,6 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-// ── Loading state ────────────────────────────────────────────────────────────
-class _QuizLoading extends StatelessWidget {
-  const _QuizLoading();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const CircularProgressIndicator(),
-          const SizedBox(height: 16),
-          Text('GermanShikshak is preparing your quiz...',
-              style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 8),
-          const Text('🤖', style: TextStyle(fontSize: 36))
-              .animate(onPlay: (c) => c.repeat())
-              .shimmer(duration: 1500.ms),
-        ],
       ),
     );
   }

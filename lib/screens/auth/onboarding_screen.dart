@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
 
+import '../../core/theme/theme_extensions.dart';
 import '../../core/constants/app_constants.dart';
 import '../../data/repositories/user_repository.dart';
+import '../../widgets/common/level_badge_icon.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -27,28 +29,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       'code': 'A1',
       'label': 'Complete Beginner',
       'desc': 'I know little or no German',
-      'emoji': '🌱',
       'color': AppColors.levelA1,
     },
     {
       'code': 'A2',
       'label': 'Elementary',
       'desc': 'I know basic words and phrases',
-      'emoji': '📗',
       'color': AppColors.levelA2,
     },
     {
       'code': 'B1',
       'label': 'Intermediate',
       'desc': 'I can hold simple conversations',
-      'emoji': '📘',
       'color': AppColors.levelB1,
     },
     {
       'code': 'B2',
       'label': 'Upper Intermediate',
       'desc': 'I can discuss most topics',
-      'emoji': '📙',
       'color': AppColors.levelB2,
     },
   ];
@@ -73,7 +71,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               Text(
                 'Personalize your LingoKaksha experience',
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                 ),
               ).animate().fadeIn(delay: 100.ms),
               const SizedBox(height: 32),
@@ -96,18 +94,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           duration: 200.ms,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
-                            color: sel ? AppColors.primary : AppColors.surface,
+                            color: sel ? AppColors.primary : context.surfaceColor,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: sel ? AppColors.primary : AppColors.divider,
+                              color: sel ? AppColors.primary : context.dividerColor,
                             ),
                           ),
                           child: Center(
                             child: Text(
                               lang['name']!,
-                              style: TextStyle(
+                              style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: sel ? Colors.white : AppColors.textPrimary,
+                                color: sel ? Colors.white : context.textPrimary,
                               ),
                             ),
                           ),
@@ -163,33 +161,30 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           duration: 200.ms,
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: sel ? AppColors.primary : AppColors.surface,
+                            color: sel ? AppColors.primary : context.surfaceColor,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: sel
                                   ? AppColors.primary
-                                  : AppColors.divider,
+                                  : context.dividerColor,
                             ),
                           ),
                           child: Column(
                             children: [
                               Text(
                                 '$min',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
+                                style: theme.textTheme.headlineMedium?.copyWith(
                                   color: sel
                                       ? Colors.white
-                                      : AppColors.textPrimary,
+                                      : context.textPrimary,
                                 ),
                               ),
                               Text(
                                 'min',
-                                style: TextStyle(
-                                  fontSize: 11,
+                                style: theme.textTheme.labelSmall?.copyWith(
                                   color: sel
-                                      ? Colors.white70
-                                      : AppColors.textSecondary,
+                                      ? Colors.white.withValues(alpha: 0.7)
+                                      : context.textSecondary,
                                 ),
                               ),
                             ],
@@ -274,24 +269,26 @@ class _LevelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = level['color'] as Color;
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: 200.ms,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: selected ? color.withOpacity(0.08) : AppColors.surface,
+          color: selected ? color.withValues(alpha: 0.08) : context.surfaceColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? color : AppColors.divider,
+            color: selected ? color : context.dividerColor,
             width: selected ? 2 : 1,
           ),
         ),
         child: Row(
           children: [
-            Text(
-              level['emoji'] as String,
-              style: const TextStyle(fontSize: 28),
+            LevelBadgeIcon(
+              level: level['code'] as String,
+              size: 48,
+              color: color,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -309,30 +306,22 @@ class _LevelCard extends StatelessWidget {
                         ),
                         child: Text(
                           level['code'] as String,
-                          style: TextStyle(
+                          style: theme.textTheme.labelMedium?.copyWith(
                             color: color,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         level['label'] as String,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                        ),
+                        style: theme.textTheme.titleMedium,
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     level['desc'] as String,
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 13,
-                    ),
+                    style: theme.textTheme.bodySmall,
                   ),
                 ],
               ),

@@ -127,6 +127,27 @@ class CurriculumRepository {
         LessonTopic(id: 'b1-skills-reading', title: 'Reading & Analysis', description: 'Skimming and scanning news and formal texts.', level: 'B1', category: '5. Skills Development'),
         LessonTopic(id: 'b1-practical-independence', title: 'Real-Life Independence', description: 'Bureaucracy and living independently in Germany.', level: 'B1', category: '6. Mastery & Prep'),
       ],
+      'B2': [
+        // 1. Advanced Grammar
+        LessonTopic(id: 'b2-grammar-konjunktiv1', title: 'Konjunktiv I', description: 'Mastering indirect speech for reporting and news.', level: 'B2', category: '1. Advanced Grammar'),
+        LessonTopic(id: 'b2-grammar-participle', title: 'Participle Attributes', description: 'Using participles as adjectives: "das lesende Kind".', level: 'B2', category: '1. Advanced Grammar'),
+        LessonTopic(id: 'b2-grammar-passive-sub', title: 'Passive Substitutes', description: 'Alternative ways to express passive: sein + zu, -bar, -abel.', level: 'B2', category: '1. Advanced Grammar'),
+        LessonTopic(id: 'b2-grammar-nominalization', title: 'Nominalization', description: 'Converting complex verbal phrases into formal noun phrases.', level: 'B2', category: '1. Advanced Grammar'),
+        LessonTopic(id: 'b2-grammar-modal-adv', title: 'Subjective Use of Modals', description: 'Expressing probability and rumors with modal verbs.', level: 'B2', category: '1. Advanced Grammar'),
+
+        // 2. Complex Communication
+        LessonTopic(id: 'b2-comm-hypotheticals', title: 'Complex Hypotheticals', description: 'Advanced use of Konjunktiv II for past regrets and complex conditions.', level: 'B2', category: '2. Communication'),
+        LessonTopic(id: 'b2-comm-debate', title: 'Debate & Discussion', description: 'Expressing agreement, disagreement, and nuances in discussions.', level: 'B2', category: '2. Communication'),
+
+        // 3. Professional Vocabulary
+        LessonTopic(id: 'b2-vocab-politics', title: 'Politics & Society', description: 'Discussing social issues, democracy, and current events.', level: 'B2', category: '3. Vocabulary'),
+        LessonTopic(id: 'b2-vocab-media', title: 'Media & Advertising', description: 'Analyzing news articles and marketing techniques.', level: 'B2', category: '3. Vocabulary'),
+        LessonTopic(id: 'b2-vocab-work-adv', title: 'Advanced Workplace', description: 'Complex professional communication and project management.', level: 'B2', category: '3. Vocabulary'),
+      ],
+      'C1': [
+        LessonTopic(id: 'c1-grammar-nuances', title: 'Nuance & Style', description: 'Mastering subtle differences in meaning and advanced stylistic devices.', level: 'C1', category: '1. Mastery'),
+        LessonTopic(id: 'c1-comm-academic', title: 'Academic Discussion', description: 'Participating in high-level academic or professional debates.', level: 'C1', category: '2. Mastery'),
+      ],
       'BUSINESS': [
         // 1. Foundation: Business Communication Basics
         LessonTopic(id: 'bus-found-formal', title: 'Formal vs Informal Language', description: 'Sie vs Du, formal tone, and professional titles/addressing.', level: 'Business', category: '1. Foundation'),
@@ -171,7 +192,15 @@ class CurriculumRepository {
         LessonTopic(id: 'fr-a1-grammar-articles', title: 'Articles (Le, La, Les)', description: 'Definite and indefinite articles (un, une, des).', level: 'A1', category: '2. Grammar Foundations'),
         LessonTopic(id: 'fr-a1-comm-intro', title: 'Introducing Yourself', description: 'Name, age, nationality, and profession.', level: 'A1', category: '3. Communication Skills'),
       ],
-      // Add more French levels as needed
+      'A2': [
+        LessonTopic(id: 'fr-a2-past-tense', title: 'Le Passé Composé', description: 'Talking about completed actions in the past.', level: 'A2', category: '1. Grammar'),
+      ],
+      'B1': [
+        LessonTopic(id: 'fr-b1-subjunctive', title: 'Le Subjonctif', description: 'Expressing doubts, wishes, and necessity.', level: 'B1', category: '1. Grammar'),
+      ],
+      'B2': [
+        LessonTopic(id: 'fr-b2-argumentation', title: 'Argumentation', description: 'Expressing complex opinions and debating.', level: 'B2', category: '1. Communication'),
+      ],
     },
     'spanish': {
       'A1': [
@@ -183,7 +212,15 @@ class CurriculumRepository {
         LessonTopic(id: 'es-a1-grammar-articles', title: 'Articles (El, La, Los, Las)', description: 'Gender and number agreement.', level: 'A1', category: '2. Grammar Foundations'),
         LessonTopic(id: 'es-a1-comm-intro', title: 'Introducing Yourself', description: 'Presenting yourself and others.', level: 'A1', category: '3. Communication Skills'),
       ],
-      // Add more Spanish levels as needed
+      'A2': [
+        LessonTopic(id: 'es-a2-past-tense', title: 'Pretérito Indefinido', description: 'Past actions in Spanish.', level: 'A2', category: '1. Grammar'),
+      ],
+      'B1': [
+        LessonTopic(id: 'es-b1-subjunctive', title: 'El Subjuntivo', description: 'Introduction to the subjunctive mood.', level: 'B1', category: '1. Grammar'),
+      ],
+      'B2': [
+        LessonTopic(id: 'es-b2-advanced', title: 'Advanced Expression', description: 'Complex sentence structures and idioms.', level: 'B2', category: '1. Communication'),
+      ],
     },
   };
 

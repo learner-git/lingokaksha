@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/theme/theme_extensions.dart';
+import 'app_svg.dart';
+import 'app_skeleton.dart';
 
 // ── AppButton — animated primary button ──────────────────────────────────────
 
@@ -88,8 +92,7 @@ class LoadingOverlay extends StatelessWidget {
               if (message != null) ...[
                 const SizedBox(height: 16),
                 Text(message!,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w500, fontSize: 14)),
+                    style: Theme.of(context).textTheme.bodyMedium),
               ],
             ],
           ),
@@ -115,11 +118,13 @@ class InlineLoader extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(),
+            const AppSkeletonBox(width: 40, height: 40, borderRadius: BorderRadius.all(Radius.circular(20))),
             if (message != null) ...[
               const SizedBox(height: 16),
               Text(message!,
-                  style: const TextStyle(color: AppColors.textSecondary)),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      )),
             ],
           ],
         ),
@@ -144,23 +149,31 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('😕', style: TextStyle(fontSize: 48)),
+            AppSvg(
+              asset: AppAssets.emptyNetwork,
+              width: 96,
+              height: 96,
+            ),
             const SizedBox(height: 16),
-            const Text('Something went wrong',
-                style: TextStyle(
-                    fontWeight: FontWeight.w700, fontSize: 18)),
+            Text(
+              'Something went wrong',
+              style: theme.textTheme.headlineSmall,
+            ),
             if (message != null) ...[
               const SizedBox(height: 8),
               Text(
                 message!,
-                style: const TextStyle(
-                    color: AppColors.textSecondary, fontSize: 14),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: context.textSecondary,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -196,11 +209,9 @@ class XpBadge extends StatelessWidget {
       ),
       child: Text(
         '+$xp XP',
-        style: const TextStyle(
-          color: AppColors.secondary,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-        ),
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: AppColors.secondary,
+            ),
       ),
     );
   }
@@ -230,11 +241,10 @@ class LevelChip extends StatelessWidget {
       ),
       child: Text(
         level,
-        style: TextStyle(
-          color: _color,
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-        ),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: _color,
+              fontWeight: FontWeight.w700,
+            ),
       ),
     );
   }
@@ -243,14 +253,16 @@ class LevelChip extends StatelessWidget {
 // ── Empty state ───────────────────────────────────────────────────────────────
 
 class EmptyState extends StatelessWidget {
-  final String emoji;
+  final String? illustrationAsset;
+  final String? emoji;
   final String title;
   final String subtitle;
   final Widget? action;
 
   const EmptyState({
     super.key,
-    required this.emoji,
+    this.illustrationAsset,
+    this.emoji,
     required this.title,
     required this.subtitle,
     this.action,
@@ -258,22 +270,32 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 56)),
+            if (illustrationAsset != null)
+              AppSvg(
+                asset: illustrationAsset!,
+                width: 120,
+                height: 120,
+              )
+            else if (emoji != null)
+              Text(emoji!, style: theme.textTheme.displaySmall),
             const SizedBox(height: 16),
-            Text(title,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w700, fontSize: 18)),
+            Text(title, style: theme.textTheme.headlineSmall),
             const SizedBox(height: 8),
-            Text(subtitle,
-                style: const TextStyle(
-                    color: AppColors.textSecondary, fontSize: 14),
-                textAlign: TextAlign.center),
+            Text(
+              subtitle,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: context.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
             if (action != null) ...[
               const SizedBox(height: 24),
               action!,

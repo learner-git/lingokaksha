@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
 import '../../data/models/vocab_card.dart';
+import '../../core/utils/app_haptics.dart';
+import '../../widgets/common/app_widgets.dart';
+import '../../widgets/common/app_svg.dart';
 import '../../data/repositories/vocab_repository.dart';
 import '../../providers/vocab_provider.dart';
 import '../../providers/user_provider.dart';
@@ -38,6 +42,7 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
   }
 
   Future<void> _rate(VocabCard card, int quality) async {
+    AppHaptics.tap();
     await ref.read(vocabReviewNotifierProvider.notifier).reviewCard(card.id, quality);
     
     setState(() {
@@ -106,24 +111,20 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
   Widget _buildFlashcardTab() {
     final dueCards = ref.watch(vocabReviewNotifierProvider);
     final language = ref.watch(selectedLanguageProvider);
-    final languageLabel = language[0].toUpperCase() + language.substring(1);
+    final languageLabel = language.isNotEmpty
+        ? language[0].toUpperCase() + language.substring(1)
+        : 'German';
     final theme = Theme.of(context);
 
     if (dueCards.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('🔥', style: TextStyle(fontSize: 40)),
-            const SizedBox(height: 10),
-            const Text('All caught up!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const Text('Check back later for new reviews.', style: TextStyle(color: AppColors.textSecondary)),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => ref.read(vocabReviewNotifierProvider.notifier).refreshDue(),
-              child: const Text('Refresh'),
-            ),
-          ],
+      return EmptyState(
+        illustrationAsset: AppAssets.emptySuccess,
+        title: 'All caught up!',
+        subtitle: 'Check back later for new reviews.',
+        action: ElevatedButton(
+          onPressed: () =>
+              ref.read(vocabReviewNotifierProvider.notifier).refreshDue(),
+          child: const Text('Refresh'),
         ),
       );
     }
@@ -179,13 +180,13 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
             const SizedBox(height: 24),
             Row(
               children: [
-                _RateButton(label: 'Again', emoji: '😓', color: AppColors.error, onTap: () => _rate(card, 0)),
+                _RateButton(label: 'Again', iconAsset: AppAssets.rateAgain, color: AppColors.error, onTap: () => _rate(card, 0)),
                 const SizedBox(width: 8),
-                _RateButton(label: 'Hard', emoji: '😐', color: AppColors.warning, onTap: () => _rate(card, 2)),
+                _RateButton(label: 'Hard', iconAsset: AppAssets.rateHard, color: AppColors.warning, onTap: () => _rate(card, 2)),
                 const SizedBox(width: 8),
-                _RateButton(label: 'Good', emoji: '🙂', color: AppColors.info, onTap: () => _rate(card, 3)),
+                _RateButton(label: 'Good', iconAsset: AppAssets.rateGood, color: AppColors.info, onTap: () => _rate(card, 3)),
                 const SizedBox(width: 8),
-                _RateButton(label: 'Easy', emoji: '😄', color: AppColors.success, onTap: () => _rate(card, 5)),
+                _RateButton(label: 'Easy', iconAsset: AppAssets.rateEasy, color: AppColors.success, onTap: () => _rate(card, 5)),
               ],
             ),
           ] else ...[
@@ -203,7 +204,7 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryTextColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
     final secondaryTextColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
-    final language = ref.watch(selectedLanguageProvider);
+    final language = ref.watch(selectedLanguageProvider).toLowerCase().trim();
 
     // If searching, we show cards from ALL levels for that language
     List<VocabCard> displayCards;
@@ -214,7 +215,8 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
       displayCards = allRepoCards.where((c) {
         final matchesQuery = c.targetText.toLowerCase().contains(_searchQuery.toLowerCase()) ||
             c.english.toLowerCase().contains(_searchQuery.toLowerCase());
-        final matchesLang = (c.category?.toLowerCase() == language.toLowerCase() || language == 'german');
+        final isGerman = language == 'german';
+        final matchesLang = (c.category?.toLowerCase() == language || isGerman);
         return matchesQuery && matchesLang;
       }).toList();
     }
@@ -245,8 +247,18 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
           ),
         ),
         Expanded(
-          child: displayCards.isEmpty 
-            ? Center(child: Text(_searchQuery.isEmpty ? 'No words found' : 'No matches found for "$_searchQuery"', style: TextStyle(color: secondaryTextColor)))
+          child: displayCards.isEmpty
+            ? EmptyState(
+                illustrationAsset: _searchQuery.isEmpty
+                    ? AppAssets.emptyVocab
+                    : AppAssets.emptySearch,
+                title: _searchQuery.isEmpty
+                    ? 'No words found'
+                    : 'No matches found',
+                subtitle: _searchQuery.isEmpty
+                    ? 'Add vocabulary or change your level to see words here.'
+                    : 'Try a different search term for "$_searchQuery".',
+              )
             : ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: displayCards.length,
@@ -258,7 +270,11 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => WordDetailScreen(word: card.targetText, level: card.level),
+                          builder: (_) => WordDetailScreen(
+                            word: card.targetText,
+                            level: card.level,
+                            card: card,
+                          ),
                         ),
                       );
                     },
@@ -291,8 +307,10 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen>
     final secondaryTextColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
 
     if (categories.isEmpty) {
-      return Center(
-        child: Text('No categories found', style: TextStyle(color: secondaryTextColor)),
+      return const EmptyState(
+        illustrationAsset: AppAssets.emptyVocab,
+        title: 'No categories found',
+        subtitle: 'Categories will appear once vocabulary is loaded.',
       );
     }
 
@@ -511,11 +529,16 @@ class _FlashCard extends StatelessWidget {
 
 class _RateButton extends StatelessWidget {
   final String label;
-  final String emoji;
+  final String iconAsset;
   final Color color;
   final VoidCallback onTap;
 
-  const _RateButton({required this.label, required this.emoji, required this.color, required this.onTap});
+  const _RateButton({
+    required this.label,
+    required this.iconAsset,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -532,9 +555,21 @@ class _RateButton extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 20)),
+              AppSvg(
+                asset: iconAsset,
+                width: 22,
+                height: 22,
+                color: color,
+              ),
               const SizedBox(height: 4),
-              Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold)),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
         ),

@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../providers/auth_provider.dart';
+import '../../core/constants/app_assets.dart';
+import '../../widgets/common/brand_logo.dart';
+import '../../widgets/common/app_svg.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -21,7 +24,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 2000));
+    await Future.delayed(const Duration(milliseconds: 1200));
     if (!mounted) return;
 
     final user = ref.read(authStateProvider).valueOrNull;
@@ -34,48 +37,33 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: const Center(
-                child: Text(
-                  '🇩🇪',
-                  style: TextStyle(fontSize: 52),
-                ),
-              ),
-            )
+            const BrandLogo(size: 100, showShadow: true)
                 .animate()
                 .scale(duration: 600.ms, curve: Curves.elasticOut)
                 .fadeIn(duration: 400.ms),
-            const SizedBox(height: 24),
-            const Text(
-              'LingoKaksha',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 36,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.5,
-              ),
+            const SizedBox(height: 20),
+            const AppSvg(
+              asset: AppAssets.logoWordmark,
+              width: 240,
+              height: 40,
+              color: Colors.white,
             )
                 .animate()
                 .slideY(begin: 0.3, duration: 500.ms, delay: 200.ms)
                 .fadeIn(duration: 500.ms, delay: 200.ms),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Learn with AI',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: Colors.white.withValues(alpha: 0.85),
                 fontWeight: FontWeight.w500,
               ),
             )

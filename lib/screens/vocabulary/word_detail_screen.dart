@@ -5,11 +5,19 @@ import '../../core/constants/app_colors.dart';
 import '../../data/services/gpt_service.dart';
 import '../../providers/user_provider.dart';
 
+import '../../data/models/vocab_card.dart';
+
 class WordDetailScreen extends ConsumerStatefulWidget {
   final String word;
   final String level;
+  final VocabCard? card;
 
-  const WordDetailScreen({super.key, required this.word, required this.level});
+  const WordDetailScreen({
+    super.key,
+    required this.word,
+    required this.level,
+    this.card,
+  });
 
   @override
   ConsumerState<WordDetailScreen> createState() => _WordDetailScreenState();
@@ -25,12 +33,68 @@ class _WordDetailScreenState extends ConsumerState<WordDetailScreen> {
   }
 
   Future<Map<String, dynamic>> _loadDetails() async {
+    // 1. Try to use the passed card first (highly efficient)
+    if (widget.card != null &&
+        widget.card!.examplePresent != null &&
+        widget.card!.examplePast != null &&
+        widget.card!.exampleFuture != null) {
+      return _mapCardToDetails(widget.card!);
+    }
+
+    // 2. Try to find the card in the repository by word and level
+    try {
+      final language = ref.read(selectedLanguageProvider);
+      final repo = ref.read(vocabRepositoryProvider);
+      final allCards = repo.getAllCards();
+
+      final normalizedWord = widget.word.toLowerCase().trim();
+      final normalizedLevel = widget.level.toUpperCase().trim();
+      final normalizedLang = language.toLowerCase().trim();
+
+      final existingCard = allCards.firstWhere(
+        (c) =>
+            c.targetText.toLowerCase().trim() == normalizedWord &&
+            c.level.toUpperCase().trim() == normalizedLevel &&
+            (normalizedLang == 'german' || c.category?.toLowerCase() == normalizedLang),
+      );
+
+      if (existingCard.examplePresent != null) {
+        return _mapCardToDetails(existingCard);
+      }
+    } catch (e) {
+      // Card not found in local repo, fallback to AI
+    }
+
+    // 3. Fallback to AI if not found locally
     final language = ref.read(selectedLanguageProvider);
     return ref.read(gptServiceProvider).getWordDetails(
           word: widget.word,
           language: language,
           level: widget.level,
         );
+  }
+
+  Map<String, dynamic> _mapCardToDetails(VocabCard card) {
+    return {
+      'meaning': card.english,
+      'examples': [
+        {
+          'tense': 'present',
+          'sentence': card.examplePresent ?? 'N/A',
+          'translation': card.translationPresent ?? 'Present tense example',
+        },
+        {
+          'tense': 'past',
+          'sentence': card.examplePast ?? 'N/A',
+          'translation': card.translationPast ?? 'Past tense example',
+        },
+        {
+          'tense': 'future',
+          'sentence': card.exampleFuture ?? 'N/A',
+          'translation': card.translationFuture ?? 'Future tense example',
+        },
+      ]
+    };
   }
 
   @override

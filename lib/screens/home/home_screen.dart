@@ -5,13 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/theme/theme_extensions.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/session_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/vocab_provider.dart';
 import '../../data/repositories/user_repository.dart';
 import '../../data/repositories/curriculum_repository.dart';
-import '../../data/models/lesson_model.dart';
+import '../../widgets/common/app_skeleton.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -52,7 +53,7 @@ class HomeScreen extends ConsumerWidget {
                               Text(
                                 _greeting(ref.watch(selectedLanguageProvider)),
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.textSecondary,
+                                  color: context.textSecondary,
                                 ),
                               ),
                               Row(
@@ -84,10 +85,8 @@ class HomeScreen extends ConsumerWidget {
                                     ? user!.displayName![0]
                                     : 'L')
                                 .toUpperCase(),
-                            style: const TextStyle(
+                            style: theme.textTheme.titleLarge?.copyWith(
                               color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
                             ),
                           ),
                         ),
@@ -132,9 +131,26 @@ class HomeScreen extends ConsumerWidget {
                         Text('Continue learning',
                             style: theme.textTheme.titleLarge),
                         const SizedBox(height: 12),
-                        _ContinueLessonCard(
-                          lessonTopic: ref.watch(curriculumRepositoryProvider).getTopicsByLevel(level).first.id,
-                          level: level,
+                        Builder(
+                          builder: (context) {
+                            final topics = ref.watch(curriculumRepositoryProvider).getTopicsByLevel(level);
+                            if (topics.isEmpty) {
+                              return Container(
+                                padding: const EdgeInsets.all(18),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                                ),
+                                child: const Text('No lessons available for this level yet.',
+                                    style: TextStyle(color: AppColors.textSecondary)),
+                              );
+                            }
+                            return _ContinueLessonCard(
+                              lessonTopic: topics.first.id,
+                              level: level,
+                            );
+                          }
                         ),
                       ],
                     ),
@@ -177,7 +193,7 @@ class HomeScreen extends ConsumerWidget {
             );
           },
 
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const HomeLoadingSkeleton(),
           error: (_, __) =>
               const Center(child: Text('Failed to load user data')),
         ),
@@ -539,6 +555,7 @@ class _QuickActionsGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final actions = [
       {
         'icon': Icons.menu_book_rounded,
@@ -599,7 +616,7 @@ class _QuickActionsGrid extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.surfaceColor,
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
@@ -632,10 +649,8 @@ class _QuickActionsGrid extends ConsumerWidget {
                       children: [
                         Text(
                           action['label'] as String,
-                          style: TextStyle(
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w900,
-                            fontSize: 14,
-                            color: AppColors.textPrimary,
                             letterSpacing: -0.5,
                           ),
                         ),
@@ -643,10 +658,8 @@ class _QuickActionsGrid extends ConsumerWidget {
                           action['sub'] as String,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: context.textSecondary,
                           ),
                         ),
                       ],
@@ -669,6 +682,9 @@ class _PracticeChallengeCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final topics = ref.watch(curriculumRepositoryProvider).getTopicsByLevel(level);
+
+    if (topics.isEmpty) return const SizedBox.shrink();
+
     // Pick a random topic from the curriculum
     final randomTopic = topics[math.Random().nextInt(topics.length)].id;
 
