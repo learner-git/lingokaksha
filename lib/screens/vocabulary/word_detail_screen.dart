@@ -1,9 +1,11 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
 import '../../data/services/gpt_service.dart';
 import '../../providers/user_provider.dart';
+import '../../data/repositories/vocab_repository.dart';
 
 import '../../data/models/vocab_card.dart';
 
@@ -33,45 +35,55 @@ class _WordDetailScreenState extends ConsumerState<WordDetailScreen> {
   }
 
   Future<Map<String, dynamic>> _loadDetails() async {
-    // 1. Try to use the passed card first (highly efficient)
-    if (widget.card != null &&
-        widget.card!.examplePresent != null &&
-        widget.card!.examplePast != null &&
-        widget.card!.exampleFuture != null) {
+    final language = ref.read(selectedLanguageProvider);
+    final repo = ref.read(vocabRepositoryProvider);
+
+    // 1. HIGH PRIORITY: Use passed card
+    if (widget.card != null && _isCardComplete(widget.card!)) {
       return _mapCardToDetails(widget.card!);
     }
 
-    // 2. Try to find the card in the repository by word and level
-    try {
-      final language = ref.read(selectedLanguageProvider);
-      final repo = ref.read(vocabRepositoryProvider);
-      final allCards = repo.getAllCards();
+    // 2. MEDIUM PRIORITY: Search local Database (JSON seeded data)
+    final localCard = _findLocalCard(repo, language);
+    if (localCard != null && _isCardComplete(localCard)) {
+      return _mapCardToDetails(localCard);
+    }
 
+    // 3. LOW PRIORITY: AI Fallback (Only if online)
+    final connectivity = await Connectivity().checkConnectivity();
+    if (connectivity != ConnectivityResult.none) {
+      return ref.read(gptServiceProvider).getWordDetails(
+            word: widget.word,
+            language: language,
+            level: widget.level,
+          );
+    }
+
+    // 4. CRITICAL FALLBACK: Offline & Not found
+    throw Exception('You are offline and this word is not in your local dictionary.');
+  }
+
+  bool _isCardComplete(VocabCard card) {
+    return card.examplePresent != null &&
+        card.examplePast != null &&
+        card.exampleFuture != null;
+  }
+
+  VocabCard? _findLocalCard(VocabRepository repo, String language) {
+    try {
       final normalizedWord = widget.word.toLowerCase().trim();
       final normalizedLevel = widget.level.toUpperCase().trim();
       final normalizedLang = language.toLowerCase().trim();
 
-      final existingCard = allCards.firstWhere(
-        (c) =>
-            c.targetText.toLowerCase().trim() == normalizedWord &&
-            c.level.toUpperCase().trim() == normalizedLevel &&
-            (normalizedLang == 'german' || c.category?.toLowerCase() == normalizedLang),
-      );
-
-      if (existingCard.examplePresent != null) {
-        return _mapCardToDetails(existingCard);
-      }
-    } catch (e) {
-      // Card not found in local repo, fallback to AI
+      return repo.getAllCards().firstWhere(
+            (c) =>
+                c.targetText.toLowerCase().trim() == normalizedWord &&
+                c.level.toUpperCase().trim() == normalizedLevel &&
+                (normalizedLang == 'german' || c.category?.toLowerCase() == normalizedLang),
+          );
+    } catch (_) {
+      return null;
     }
-
-    // 3. Fallback to AI if not found locally
-    final language = ref.read(selectedLanguageProvider);
-    return ref.read(gptServiceProvider).getWordDetails(
-          word: widget.word,
-          language: language,
-          level: widget.level,
-        );
   }
 
   Map<String, dynamic> _mapCardToDetails(VocabCard card) {

@@ -64,5 +64,12 @@ backend/.git
 # Project specific
 lib.zip
 *.aiexclude
+*.env
+.env
 lib/firebase_options.dart
 firebase.json
+
+# Secrets & Local overrides
+secret.gpg
+local.properties
+.flaskenv

@@ -1,3 +1,5 @@
+import '../utils/environment_config.dart';
+
 class AppConstants {
   AppConstants._();
 
@@ -5,11 +7,7 @@ class AppConstants {
   static const appVersion = '1.0.0';
 
   // API
-  static const apiBaseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    //defaultValue: 'http://127.0.0.1:8000', // Standard for Local Desktop
-    defaultValue: 'http://192.168.0.244:8000', // Android Mobile
-  );
+  static final apiBaseUrl = EnvironmentConfig.apiBaseUrl;
 
   // Languages
   static const defaultLanguage = 'german';
