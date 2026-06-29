@@ -19,5 +19,3 @@ backend/
 *.png
 .gitignore
 Dockerfile
-nginx.conf
-entrypoint.sh
