@@ -7,26 +7,16 @@ class AppResponsiveWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // If not web, just return the child normally
+    // On native Mobile (Android/iOS), don't add any extra logic
     if (!kIsWeb) return child;
 
-    return Container(
-      color: const Color(0xFFF5F7FA), // Neutral background color for the "desk"
-      child: Center(
-        child: ClipRRect(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 500), // Standard mobile width
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: child,
-          ),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Center(
+        child: Container(
+          // Allow full width on mobile/tablet, but cap it for ultra-wide desktop monitors
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: child,
         ),
       ),
     );
